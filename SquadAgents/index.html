@@ -5,20 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מבצע "חוליית רפאים"</title>
     
-    <!-- תופסן שגיאות כדי למנוע "מסך שחור" אילם -->
+    <!-- תופסן שגיאות מתקדם כדי למנוע "מסך שחור" אילם -->
     <script>
         window.addEventListener('error', function(e) {
             document.body.innerHTML += '<div style="color: #ff8080; padding: 20px; background: #220000; z-index: 9999; position: absolute; top: 0; left: 0; right: 0; text-align: left; font-family: monospace;" dir="ltr"><h3>🚨 System Crash Error:</h3>' + e.message + '<br>Line: ' + e.lineno + '</div>';
         });
+        
+        // תפיסת שגיאות קומפילציה שקטות של Babel
+        const originalError = console.error;
+        console.error = function(...args) {
+            if (args[0] && typeof args[0] === 'string' && (args[0].includes('SyntaxError') || args[0].includes('Babel'))) {
+                document.body.innerHTML += '<div style="color: #ff8080; padding: 20px; background: #220000; z-index: 9999; position: absolute; top: 0; left: 0; right: 0; text-align: left; font-family: monospace;" dir="ltr"><h3>🚨 Babel Compilation Error:</h3><pre>' + args.join(' ') + '</pre></div>';
+            }
+            originalError.apply(console, args);
+        };
+
+        // התראה במקרה של חסימת רשת (למשל אינטרנט של משרד החינוך)
+        function handleScriptError(scriptName) {
+            document.body.innerHTML = '<div style="color: #ff8080; padding: 40px; background: #220000; height: 100vh; text-align: center; font-family: sans-serif;" dir="rtl"><h2>🚨 שגיאת רשת - ' + scriptName + ' נחסם!</h2><p>נראה שרשת האינטרנט שלך (אולי רשת בית ספר/עבודה או חוסם פרסומות) חוסמת את טעינת ספריות הקוד.</p><p>נסה לגלוש מרשת אחרת (למשל Hotspot מהטלפון של האינטרנט הסלולרי).</p></div>';
+        }
     </script>
 
-    <!-- טעינת ספריות React ו-Babel (ללא crossorigin כדי למנוע חסימות מקומיות) -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- טעינת ספריות משרתים חלופיים (CDNJS) עמידים יותר לחסימות -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" onerror="handleScriptError('React')"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" onerror="handleScriptError('React DOM')"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.6/babel.min.js" onerror="handleScriptError('Babel')"></script>
     
     <!-- טעינת מסגרת העיצוב Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com" onerror="handleScriptError('Tailwind CSS')"></script>
     
     <style>
         /* יבוא פונט עברי נקי */
@@ -54,14 +68,14 @@
 <body>
     <!-- מסך טעינה שידרס ברגע שהריאקט יעבוד -->
     <div id="root">
-        <div style="display: flex; justify-content: center; items-align: center; height: 100vh; flex-direction: column; text-align: center; padding-top: 20vh; color: #a855f7;">
+        <div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; text-align: center; padding-top: 20vh; color: #a855f7;">
             <h2>[ מתחבר לשרתי הסייבר... ]</h2>
             <p style="color: #6b7280; margin-top: 10px;">אם מסך זה נשאר למעלה מ-5 שניות, ודא שיש לך חיבור לאינטרנט.</p>
         </div>
     </div>
 
     <!-- הגדרת presets קריטית ל-Babel -->
-    <script type="text/babel" data-presets="react,env">
+    <script type="text/babel" data-presets="react">
         const { useState, useEffect } = React;
 
         // ============================================================================
@@ -1151,8 +1165,12 @@
           );
         };
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+        try {
+            const root = ReactDOM.createRoot(document.getElementById('root'));
+            root.render(<App />);
+        } catch (err) {
+            document.getElementById('root').innerHTML = '<div style="color: #ff8080; padding: 20px; background: #220000; z-index: 9999; position: absolute; top: 0; left: 0; right: 0; text-align: left; font-family: monospace;" dir="ltr"><h3>🚨 React Render Error:</h3>' + err.message + '</div>';
+        }
     </script>
 </body>
 </html>
