@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 11 - Cyber Mission Briefing</title>
+    <style>
+        /* עיצוב סייבר בסיסי */
+        body {
+            background-color: #0a0a0a; /* שחור עמוק */
+            color: #00ff00; /* ירוק זוהר */
+            font-family: 'Courier New', Courier, monospace; /* פונט טרמינל */
+            padding: 30px;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* אפקט "סריקה" עדין על כל המסך */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0.15;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 2px solid #00ff00;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff;
+            text-shadow: 0 0 10px #00ff00;
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 15px;
+            font-size: 28px;
+        }
+
+        h2 {
+            color: #00ff00;
+            border-bottom: 1px solid #004400;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+
+        .typing-effect {
+            overflow: hidden; /* מסתיר את הטקסט שטרם "הוקלד" */
+            border-right: .15em solid orange; /* הסמן המהבהב */
+            white-space: nowrap; /* מונע מהטקסט לרדת שורה בזמן ההקלדה */
+            margin: 0 auto; 
+            letter-spacing: .15em;
+            animation: 
+              typing 3.5s steps(40, end),
+              blink-caret .75s step-end infinite;
+        }
+
+        @keyframes typing {
+          from { width: 0 }
+          to { width: 100% }
+        }
+
+        @keyframes blink-caret {
+          from, to { border-color: transparent }
+          50% { border-color: orange; }
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li::before {
+            content: "> "; /* סמל טרמינל לפני כל פריט */
+            color: #fff;
+        }
+
+        li {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .warning-box {
+            background-color: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff0000;
+            color: #ffcccc;
+            padding: 15px;
+            margin-top: 30px;
+            border-radius: 5px;
+        }
+
+        .warning-box h3 {
+            margin-top: 0;
+            color: #ff4444;
+            text-shadow: 0 0 5px #ff0000;
+        }
+
+        .warning-box li::before {
+            content: "! ";
+            color: #ff0000;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 40px;
+            color: #00ff00;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .back-link:hover {
+            color: #fff;
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>[ GRADE_11_MISSION_BRIEFING ]</h1>
+        
+        <p class="typing-effect">מתכנתים, המשימה שלכם מתחילה עכשיו...</p>
+        
+        <p>להלן פירוט מודולי הידע (Subroutines) שעלייך להטמיע במערכת המוח שלך כדי לעבור את השלב בהצלחה:</p>
+
+        <h2>__סילבוס_משימה (Technical_Stack)</h2>
+        <ul>
+            <li>[שלב 01] הגדרת ישויות בסיסיות (עצמים פשוטים).</li>
+            <li>[שלב 02] ניהול דאטה ליניארי (מערך מספרים).</li>
+            <li>[שלב 03] ארכוב ישויות מורכב (מערך עצמים).</li>
+            <li>[שלב 04] ארכיטקטורת נתונים מתקדמת (עצמים מורכבים).</li>
+        </ul>
+
+        <div class="warning-box">
+            <h3>[ הנדסה_חברתית - המלצות המורה ]</h3>
+            <ul>
+                <li><strong>Log File מסודר:</strong> וודאו שהמחברת שלכם מכילה את כל הקוד. אל תסמכו על ה-Cache של המוח.</li>
+                <li><strong>קוד מקורי:</strong> יש להגיש שיעורי בית בזמן.
+                    <ul>
+                        <li>`CTRL+C` -> `CTRL+V` ממחברת של חבר *לא* נחשב קומפילציה.</li>
+                        <li>(המערכת מזהה טביעת אצבע דיגיטלית זרה).</li>
+                    </ul>
+                </li>
+                <li><strong>System Check:</strong> סומכת עליכם שתעשו עבודה נקייה.</li>
+            </ul>
+        </div>
+
+        <a href="../" class="back-link"><< חזרה למאגר הראשי</a>
+    </div>
+
+</body>
+</html>
