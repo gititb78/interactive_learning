@@ -1,1067 +1,710 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  ChevronLeft, ChevronRight, Code, Play, CheckCircle2, XCircle, 
-  ShieldAlert, Terminal, ShieldCheck, Bug, Camera, Award, FileLock2, 
-  RadioReceiver, Info, Ghost, Badge, TrendingUp, Shield, HelpCircle, Unlock
-} from 'lucide-react';
-
-// ============================================================================
-// COMPONENT 1: PRESENTATION (מצגת למידה)
-// ============================================================================
-const Presentation = ({ onComplete }) => {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const totalSlides = 7;
-
-  const nextSlide = () => { if (currentSlide < totalSlides - 1) setCurrentSlide(prev => prev + 1); };
-  const prevSlide = () => { if (currentSlide > 0) setCurrentSlide(prev => prev - 1); };
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'ArrowLeft') nextSlide();
-      if (e.key === 'ArrowRight') prevSlide();
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentSlide]);
-
-  return (
-    <div className="flex flex-col h-screen w-full bg-[#05020a] p-2 sm:p-6 overflow-hidden relative">
-      {/* Background decorations */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20 bg-[radial-gradient(circle_at_10%_10%,_#d946ef_0%,_transparent_40%),radial-gradient(circle_at_90%_90%,_#22d3ee_0%,_transparent_40%)]"></div>
-      
-      {/* Main Slide Area */}
-      <div className="flex-grow flex items-center justify-center relative w-full max-w-6xl mx-auto z-10">
-        <div className="bg-[#0f0822] border border-violet-800/50 shadow-[0_0_40px_rgba(217,70,239,0.15)] rounded-2xl w-full h-auto max-h-[85vh] min-h-[60vh] p-4 sm:p-12 flex flex-col justify-center overflow-y-auto overflow-x-hidden transition-all duration-500">
-          
-          {/* SLIDE 0: Title */}
-          {currentSlide === 0 && (
-            <div className="text-center animate-in fade-in zoom-in duration-500">
-              <h1 className="text-4xl sm:text-7xl font-extrabold text-fuchsia-400 drop-shadow-[0_0_15px_rgba(217,70,239,0.4)] mb-4 leading-tight">
-                הכרת סוכן הסייבר <br/>
-                <span className="text-cyan-400 font-mono tracking-widest">[Agent]</span>
-              </h1>
-              <p className="text-lg sm:text-2xl text-violet-300 mt-6">תדריך מקדים: הבנת אבן הבסיס לפני פריצה לתוך מערך של עצמים.</p>
-            </div>
-          )}
-
-          {/* SLIDE 1: What is an Agent? */}
-          {currentSlide === 1 && (
-            <div className="w-full animate-in fade-in slide-in-from-right-8 duration-500">
-              <h2 className="text-2xl sm:text-4xl font-bold text-fuchsia-400 border-b-2 border-fuchsia-900/50 pb-4 mb-6 sm:mb-8">מהו בעצם סוכן (Agent)?</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-center">
-                <div className="space-y-4 text-base sm:text-xl text-violet-200 leading-relaxed">
-                  <p>לפני שאנחנו מנהלים חוליה שלמה (מערך סוכנים), אנחנו חייבים להבין את יחידת הבסיס. המחלקה <code>Agent</code> מייצגת סוכן בודד.</p>
-                  <p>לכל סוכן יש שתי תכונות עיקריות (Properties) השמורות בזיכרון:</p>
-                  <ul className="space-y-3 pr-6 mt-4 list-disc marker:text-cyan-400">
-                    <li><code className="text-fuchsia-300">alias</code> - שם קוד / כינוי (<span className="text-cyan-400">string</span>)</li>
-                    <li><code className="text-fuchsia-300">level</code> - רמת סיווג / מיומנות (<span className="text-cyan-400">int</span>)</li>
-                  </ul>
-                  <p className="mt-4 text-violet-300 text-sm sm:text-base border-r-4 border-fuchsia-500 pr-4">תכונות אלו מוגדרות כ- <code>private</code> (פרטיות) כדי למנוע מגורמים עוינים לשנות אותן ישירות (עקרון הכימוס).</p>
-                </div>
-                <div className="bg-[#05020a] border border-violet-600/30 rounded-xl h-48 sm:h-64 flex flex-col items-center justify-center shadow-[0_0_20px_rgba(139,92,246,0.2)]">
-                  <Ghost className="w-24 h-24 sm:w-32 sm:h-32 text-cyan-400 drop-shadow-[0_0_15px_rgba(34,211,238,0.4)] mb-4" />
-                  <span className="text-violet-400 font-mono text-sm sm:text-base"></span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* SLIDE 2: Constructor */}
-          {currentSlide === 2 && (
-            <div className="w-full animate-in fade-in slide-in-from-right-8 duration-500">
-              <h2 className="text-2xl sm:text-4xl font-bold text-fuchsia-400 border-b-2 border-fuchsia-900/50 pb-4 mb-6 sm:mb-8">הפעולה הבונה (Constructor)</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-stretch">
-                <div className="bg-[#1a0f35]/80 border border-violet-500/30 p-5 sm:p-6 rounded-xl space-y-4 flex flex-col justify-center">
-                  <h3 className="text-xl sm:text-2xl font-bold text-fuchsia-300">יצירת החיים בזיכרון</h3>
-                  <p className="text-base sm:text-lg text-violet-200">הפעולה הבונה היא התחנה הראשונה. היא מאפשרת לנו לאתחל סוכן חדש בזיכרון, תוך הענקת שם ורמה המגיעים כפרמטרים מבחוץ.</p>
-                  <p className="text-base sm:text-lg text-violet-200">כדי ליצור מופע (Instance) חדש, אנו <strong className="text-white">חייבים</strong> להשתמש במילה השמורה <code className="text-cyan-400">new</code>.</p>
-                </div>
-                <div className="bg-[#05020a] border border-violet-600/50 rounded-xl p-5 sm:p-6 overflow-x-auto" dir="ltr">
-                  <h3 className="text-lg sm:text-xl font-bold text-violet-400 mb-4 border-b border-violet-800/50 pb-2">C# Code</h3>
-                  <pre className="text-xs sm:text-sm text-fuchsia-200 font-mono leading-relaxed">
-<span className="text-fuchsia-400">public class</span> <span className="text-cyan-300">Agent</span> {'{\n'}
-  <span className="text-fuchsia-400">private string</span> alias;{'\n'}
-  <span className="text-fuchsia-400">private int</span> level;{'\n\n'}
-  <span className="text-fuchsia-400">public</span> <span className="text-cyan-300">Agent</span>(<span className="text-fuchsia-400">string</span> alias, <span className="text-fuchsia-400">int</span> level) {'{\n'}
-    <span className="text-fuchsia-400">this</span>.alias = alias;{'\n'}
-    <span className="text-fuchsia-400">this</span>.level = level;{'\n'}
-  {'}\n'}
-{'}'}
-                  </pre>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* SLIDE 3: Copy Constructor */}
-          {currentSlide === 3 && (
-            <div className="w-full animate-in fade-in slide-in-from-right-8 duration-500">
-              <h2 className="text-2xl sm:text-4xl font-bold text-fuchsia-400 border-b-2 border-fuchsia-900/50 pb-4 mb-6 sm:mb-8">הפעולה הבונה המעתיקה</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-stretch">
-                <div className="bg-[#1a0f35]/80 border border-violet-500/30 p-5 sm:p-6 rounded-xl space-y-4 flex flex-col justify-center">
-                  <h3 className="text-xl sm:text-2xl font-bold text-fuchsia-300">שכפול זהויות (Deep Copy)</h3>
-                  <p className="text-base sm:text-lg text-violet-200">נרצה לקחת סוכן קיים וליצור סוכן <strong className="text-white">חדש לחלוטין</strong> עם אותן תכונות, מבלי שהם יחלקו את אותו מקום בזיכרון.</p>
-                  <p className="text-base sm:text-lg text-violet-200">זהו מנגנון הגנה קריטי שמונע שיתוף מצביעים זדוני (Aliasing). במקום String, הפעולה מקבלת כפרמטר סוכן קיים (<code>other</code>).</p>
-                </div>
-                <div className="bg-[#05020a] border border-violet-600/50 rounded-xl p-5 sm:p-6 overflow-x-auto" dir="ltr">
-                  <h3 className="text-lg sm:text-xl font-bold text-violet-400 mb-4 border-b border-violet-800/50 pb-2">C# Code</h3>
-                  <pre className="text-xs sm:text-sm text-fuchsia-200 font-mono leading-relaxed">
-<span className="text-fuchsia-400">public</span> <span className="text-cyan-300">Agent</span>(<span className="text-cyan-300">Agent</span> other) {'{\n'}
-  <span className="text-fuchsia-400">this</span>.alias = other.alias;{'\n'}
-  <span className="text-fuchsia-400">this</span>.level = other.level;{'\n'}
-{'}\n\n'}
-<span className="text-violet-500">// Example Usage:</span>{'\n'}
-<span className="text-cyan-300">Agent</span> clone = <span className="text-fuchsia-400">new</span> <span className="text-cyan-300">Agent</span>(bestAgent);
-                  </pre>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* SLIDE 4: Getters / Setters */}
-          {currentSlide === 4 && (
-            <div className="w-full animate-in fade-in slide-in-from-right-8 duration-500">
-              <h2 className="text-2xl sm:text-4xl font-bold text-fuchsia-400 border-b-2 border-fuchsia-900/50 pb-4 mb-6 sm:mb-8">פעולות גישה לעצם</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-                <div className="bg-[#1a0f35]/80 border border-violet-500/30 p-4 sm:p-6 rounded-xl flex flex-col items-center text-center">
-                  <Badge className="w-12 h-12 sm:w-16 sm:h-16 text-cyan-400 mb-4" />
-                  <h3 className="text-xl sm:text-2xl font-bold text-fuchsia-300 mb-2 font-mono">GetAlias()</h3>
-                  <p className="text-sm sm:text-base text-violet-200">מחזירה את שם הקוד של הסוכן. פעולה קריטית לחיפוש סוכן ספציפי בתוך המערך.</p>
-                </div>
-                <div className="bg-[#1a0f35]/80 border border-violet-500/30 p-4 sm:p-6 rounded-xl flex flex-col items-center text-center">
-                  <TrendingUp className="w-12 h-12 sm:w-16 sm:h-16 text-cyan-400 mb-4" />
-                  <h3 className="text-xl sm:text-2xl font-bold text-fuchsia-300 mb-2 font-mono">GetLevel()</h3>
-                  <p className="text-sm sm:text-base text-violet-200">מחזירה את רמת הסוכן. בעזרתה נחשב ממוצע מיומנויות או נחפש את הסוכן החזק ביותר.</p>
-                </div>
-                <div className="bg-[#1a0f35]/80 border border-violet-500/30 p-4 sm:p-6 rounded-xl flex flex-col items-center text-center">
-                  <Shield className="w-12 h-12 sm:w-16 sm:h-16 text-cyan-400 mb-4" />
-                  <h3 className="text-xl sm:text-2xl font-bold text-fuchsia-300 mb-2 font-mono">SetLevel(n)</h3>
-                  <p className="text-sm sm:text-base text-violet-200">מעדכנת את רמת הסוכן רק דרך צינור מאובטח ומוגדר, ולא בגישה ישירה לתכונה.</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* SLIDE 5: Test Yourself */}
-          {currentSlide === 5 && (
-            <div className="w-full animate-in fade-in slide-in-from-right-8 duration-500">
-              <h2 className="text-2xl sm:text-4xl font-bold text-fuchsia-400 border-b-2 border-fuchsia-900/50 pb-4 mb-6 sm:mb-8">בחן את עצמך: חוק ברזל</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-                <div className="bg-[#1a0f35]/80 border border-violet-500/30 p-5 sm:p-6 rounded-xl space-y-4">
-                  <div className="flex items-center gap-3 text-cyan-400 mb-2">
-                    <HelpCircle className="w-6 h-6 sm:w-8 sm:h-8" />
-                    <h3 className="text-xl sm:text-2xl font-bold m-0">שאלת אבטחה קריטית</h3>
-                  </div>
-                  <p className="text-base sm:text-lg text-violet-200">האם מחלקת <code>Agent</code> היא מטיפוס ערך (Value Type) כמו <code>int</code>, או מטיפוס הפניה (Reference Type)?</p>
-                  <p className="text-base sm:text-lg text-fuchsia-300 font-bold mt-4">ולמה זה קריטי כשאנחנו בונים מערך שלם של סוכנים?</p>
-                </div>
-                <div className="bg-[#05020a] border border-green-500/30 p-5 sm:p-6 rounded-xl space-y-4">
-                  <div className="flex items-center gap-3 text-green-400 mb-2">
-                    <Unlock className="w-6 h-6 sm:w-8 sm:h-8" />
-                    <h3 className="text-xl sm:text-2xl font-bold m-0">תשובת המערכת</h3>
-                  </div>
-                  <p className="text-base sm:text-lg text-violet-200">עצם (Object) הוא תמיד <strong className="text-white">טיפוס הפניה (Reference Type)!</strong> מזה נגזרים 2 חוקים מוחלטים:</p>
-                  <ul className="space-y-3 pr-6 mt-4 list-disc marker:text-green-400 text-sm sm:text-base text-violet-300">
-                    <li>תא ריק במערך הסוכנים אינו מכיל 0 אלא <code className="text-fuchsia-400">null</code>. פנייה לתא כזה תרסק את התוכנית!</li>
-                    <li>אם נחזיר סוכן מתוך פעולה, חובה להחזיר עותק שלו (<code className="text-cyan-400">new Agent(a)</code>) כדי למנוע שינוי זדוני של המקור.</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* SLIDE 6: Go to Simulation */}
-          {currentSlide === 6 && (
-            <div className="w-full text-center space-y-6 sm:space-y-8 animate-in fade-in zoom-in duration-500">
-              <h2 className="text-4xl sm:text-6xl font-bold text-cyan-400 drop-shadow-[0_0_15px_rgba(34,211,238,0.4)]">מוכנים למבצע?</h2>
-              <p className="text-lg sm:text-2xl text-violet-200">כעת, כשהבנו מיהו הסוכן הבודד ואיך שולטים בו, אנו מוכנים לנהל חוליית רפאים שלמה.</p>
-              <div className="pt-6 sm:pt-8">
-                <button 
-                  onClick={onComplete}
-                  className="bg-cyan-500 hover:bg-cyan-400 text-[#05020a] text-xl sm:text-2xl font-bold py-3 sm:py-4 px-6 sm:px-10 rounded-xl transition-all hover:scale-105 shadow-[0_0_20px_rgba(34,211,238,0.5)] flex items-center justify-center gap-3 mx-auto"
-                >
-                  <Terminal className="w-6 h-6 sm:w-8 sm:h-8" />
-                  התחבר לסימולציה כעת
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Navigation Bar */}
-      <div className="h-16 sm:h-20 flex items-center justify-center gap-3 sm:gap-8 z-20 mt-2 sm:mt-0">
-        <button 
-          onClick={nextSlide} 
-          disabled={currentSlide === totalSlides - 1}
-          className="flex items-center gap-1 sm:gap-2 bg-fuchsia-700 hover:bg-fuchsia-600 disabled:bg-violet-900 disabled:opacity-50 disabled:cursor-not-allowed text-white px-3 sm:px-6 py-2 sm:py-2.5 rounded-lg font-bold transition-all text-sm sm:text-base"
-        >
-          הבא <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-        </button>
-        <span className="text-fuchsia-300 font-mono text-base sm:text-xl font-bold bg-[#1a0f35] border border-violet-700/50 px-4 sm:px-6 py-1 sm:py-1.5 rounded-full">
-          {currentSlide + 1} / {totalSlides}
-        </span>
-        <button 
-          onClick={prevSlide} 
-          disabled={currentSlide === 0}
-          className="flex items-center gap-1 sm:gap-2 bg-fuchsia-700 hover:bg-fuchsia-600 disabled:bg-violet-900 disabled:opacity-50 disabled:cursor-not-allowed text-white px-3 sm:px-6 py-2 sm:py-2.5 rounded-lg font-bold transition-all text-sm sm:text-base"
-        >
-          <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" /> הקודם
-        </button>
-      </div>
-    </div>
-  );
-};
-
-// ============================================================================
-// COMPONENT 2: CONNECTING TERMINAL (מסך מעבר)
-// ============================================================================
-const ConnectingTerminal = ({ onComplete }) => {
-  const [lines, setLines] = useState(0);
-
-  useEffect(() => {
-    const timer1 = setTimeout(() => setLines(1), 500);
-    const timer2 = setTimeout(() => setLines(2), 1500);
-    const timer3 = setTimeout(() => setLines(3), 2500);
-    const timer4 = setTimeout(() => setLines(4), 3500);
-    const timer5 = setTimeout(() => onComplete(), 5000); // Transition to game
-    return () => { clearTimeout(timer1); clearTimeout(timer2); clearTimeout(timer3); clearTimeout(timer4); clearTimeout(timer5); };
-  }, [onComplete]);
-
-  return (
-    <div className="flex flex-col h-screen w-full bg-[#05020a] items-center justify-center p-4 sm:p-6">
-      <div className="w-full max-w-3xl bg-[#0a0514] border-2 border-cyan-500/50 rounded-xl p-4 sm:p-8 shadow-[inset_0_0_40px_rgba(34,211,238,0.1)] text-cyan-400 font-mono text-sm sm:text-2xl" dir="ltr">
-        {lines >= 1 && <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 mb-2 sm:mb-4">&gt; Establishing secure connection to CyberSquad Mainframe...</div>}
-        {lines >= 2 && <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 mb-2 sm:mb-4">&gt; Bypassing proxy protocols... <span className="text-green-400">[OK]</span></div>}
-        {lines >= 3 && <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 mb-2 sm:mb-4">&gt; Loading Agent Object Arrays... <span className="text-green-400">[OK]</span></div>}
-        {lines >= 4 && <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 mb-6 sm:mb-8">&gt; Access Granted. Launching Simulation Interface.</div>}
-        
-        {lines >= 4 && (
-          <div className="text-center mt-8 sm:mt-12 animate-in fade-in zoom-in duration-500" dir="rtl">
-            <ShieldCheck className="w-12 h-12 sm:w-16 sm:h-16 text-green-400 mx-auto mb-4 animate-pulse" />
-            <h2 className="text-xl sm:text-3xl font-bold text-white font-sans">חיבור הושלם. מפעיל מערכת...</h2>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-// ============================================================================
-// COMPONENT 3: SIMULATION GAME (המשחק המרכזי)
-// ============================================================================
-const Simulation = () => {
-  const [step, setStep] = useState(0);
-  const [agentName, setAgentName] = useState('');
-  const [gender, setGender] = useState(null);
-  const [answers, setAnswers] = useState({
-    1: '', 2: null, 3: '', 4: null, 5: '', 6: null, 7: '', 8: null, 9: '', 10: null, 11: '', 12: '', 13: ''
-  });
-  
-  const [error, setError] = useState('');
-  const [successMsg, setSuccessMsg] = useState('');
-  const [timestamp, setTimestamp] = useState('');
-  
-  // מנגנון הרמזים החדש
-  const [showHint, setShowHint] = useState(false);
-  const [showReveal, setShowReveal] = useState(false);
-
-  const isF = gender === 'F';
-
-  const nextStep = () => {
-    setError('');
-    setSuccessMsg('');
-    setShowHint(false);
-    setShowReveal(false);
-    setStep(step + 1);
-  };
-
-  const updateAnswer = (qNum, val) => {
-    setAnswers(prev => ({ ...prev, [qNum]: val }));
-  };
-
-  // --- Handlers for Code Completion Stages ---
-  const handleCodeSubmit = (qNum, validationFn, successText, errorTextFn) => {
-    let rawAns = answers[qNum] || '';
-    let cleanAns = rawAns.replace(/\s+/g, '').toLowerCase();
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>דף עבודה אינטראקטיבי: עצים בינאריים</title>
     
-    // מנגנון סלחני לנקודה-פסיק מיותרת
-    let syntaxWarning = '';
-    if (cleanAns.includes(';;')) {
-      syntaxWarning = ' (הערה: שמת יותר מדי נקודה-פסיק, תיקנו עבורך)';
-    }
-    // ניקוי כל נקודה-פסיק בסוף התשובה כדי שהבדיקה תעבור חלקה
-    cleanAns = cleanAns.replace(/;+$/, '');
-
-    const result = validationFn(cleanAns);
+    <!-- טעינת Tailwind CSS לעיצוב -->
+    <script src="https://cdn.tailwindcss.com"></script>
     
-    if (result.isCorrect) {
-      setSuccessMsg(successText + syntaxWarning);
-      if (qNum === 13) setTimestamp(new Date().toLocaleString('he-IL'));
-      setTimeout(nextStep, 2500);
-    } else {
-      setError(errorTextFn ? errorTextFn(cleanAns) : 'קוד שגוי. תוכלו להיעזר ברמז או בלחצן "גלה לי".');
-    }
-  };
+    <!-- טעינת React מ-CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- טעינת Babel כדי לקמפל את קוד ה-React (JSX) ישירות בדפדפן -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-  // --- Handlers for Bug Hunting Stages ---
-  const handleBugSubmit = (qNum, correctLine, successText, errorOptions) => {
-    const ans = answers[qNum];
-    if (ans === correctLine) {
-      setSuccessMsg(successText);
-      if (qNum === 13) setTimestamp(new Date().toLocaleString('he-IL'));
-      setTimeout(nextStep, 3500);
-    } else if (ans === null) {
-      setError('נא לבחור שורת קוד לפני הרצת הבדיקה.');
-    } else {
-      setError(errorOptions[ans] || 'שורה זו תקינה לחלוטין. חפש את השגיאה הלוגית במקום אחר.');
-    }
-  };
+    <style>
+        /* הגדרת גופן יפה לאפליקציה */
+        body { font-family: system-ui, -apple-system, sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50">
 
-  // --- Validations ---
-  const checkQ1 = () => handleCodeSubmit(1, 
-    (a) => ({ isCorrect: a === 'newagent[maxsize]' || a === 'newagent[maxcapacity]' }),
-    'אתחול מערך עצמים עבר בהצלחה. כרגע כל התאים מכילים Null.',
-    (a) => 'נסו שוב. (ניתן להיעזר ברמז למטה)'
-  );
+    <!-- כאן האפליקציה תרוץ -->
+    <div id="root"></div>
 
-  const checkQ2 = () => handleBugSubmit(2, 2,
-    'איתור מזהיר! החזרת True לפני שקידמת את המונה (currentIndex). הסוכן הבא פשוט ידרוס את הסוכן הנוכחי!',
-    { 0: 'הבדיקה שאין חריגה מגבולות המערך הכרחית ותקינה.', 1: 'יצירת עותק חדש (new Agent) והכנסתו למערך במיקום הנוכחי היא פעולה נכונה כדי למנוע Aliasing.' }
-  );
+    <!-- קוד ה-React שלנו -->
+    <script type="text/babel">
+        const { useState, useEffect } = React;
 
-  const checkQ3 = () => handleCodeSubmit(3,
-    (a) => ({ isCorrect: a === 'currentindex++' || a === 'this.currentindex++' || a === 'currentindex=currentindex+1' }),
-    'הלוגיקה תוקנה! מונה הסוכנים מקודם כעת לאחר כל הוספה, כפי שנדרש בשיטת המונה.',
-    () => 'נסו שוב. (ניתן להיעזר ברמז למטה)'
-  );
+        // --- תחליף לאייקונים של lucide-react (כדי לעבוד בקובץ בודד) ---
+        const SVGIcon = ({ children, className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                {children}
+            </svg>
+        );
+        const CheckCircle = ({className}) => <SVGIcon className={className}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></SVGIcon>;
+        const XCircle = ({className}) => <SVGIcon className={className}><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></SVGIcon>;
+        const Code = ({className}) => <SVGIcon className={className}><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></SVGIcon>;
+        const ArrowRight = ({className}) => <SVGIcon className={className}><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></SVGIcon>;
+        const Lightbulb = ({className}) => <SVGIcon className={className}><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.9 1.2 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></SVGIcon>;
+        const PlayCircle = ({className}) => <SVGIcon className={className}><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></SVGIcon>;
+        const BookOpen = ({className}) => <SVGIcon className={className}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></SVGIcon>;
+        const HelpCircle = ({className}) => <SVGIcon className={className}><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></SVGIcon>;
+        const ChevronLeft = ({className}) => <SVGIcon className={className}><polyline points="15 18 9 12 15 6"/></SVGIcon>;
+        const AlertTriangle = ({className}) => <SVGIcon className={className}><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></SVGIcon>;
+        const Award = ({className}) => <SVGIcon className={className}><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></SVGIcon>;
+        const Copy = ({className}) => <SVGIcon className={className}><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></SVGIcon>;
+        // -----------------------------------------------------------------
 
-  const checkQ4 = () => handleBugSubmit(4, 1,
-    'שגיאת קריסה (NullReferenceException) אותרה! מערך העצמים שלנו מלא ב-Null בתאים הריקים שלו. אי אפשר לסרוק את כל המערך עד הסוף (Length), אחרת ננסה להפעיל GetLevel על שום-דבר!',
-    { 0: 'הגדרת הסכום ואתחולו ל-0 תקינה לחלוטין.', 2: 'הגישה לרמת הסוכן (GetLevel) והוספתה לסכום מבוצעת נכון בהנחה שהסוכן קיים.', 3: 'חישוב הממוצע תוך ביצוע המרה ל-double תקין והכרחי.' }
-  );
+        const questionsData = [
+          {
+            id: 3,
+            title: "שאלה 3: עץ שלם",
+            description: "עץ שגובהו n נקרא 'עץ שלם' אם מספר העלים בו הוא 2^n. כתבו פעולה חיצונית המקבלת עץ בינארי ומחזירה true אם העץ הוא שלם, ו-false אחרת. היעזרו בפעולת הגובה (GetHeight) ובפעולה הסופרת עלים (CountLeaves).",
+            steps: [
+              {
+                instruction: "שלב 1: כותרת הפעולה. הגדירו פעולה חיצונית (public static) בשם IsPerfectTree שמחזירה אמת/שקר ומקבלת עץ של מספרים שלמים.",
+                keywords: ["public", "static", "bool", "BinNode", "int", "IsPerfectTree"],
+                hints: ["הפעולה צריכה להחזיר טיפוס בוליאני (bool).", "הפעולה מקבלת פרמטר מסוג BinNode<int>."],
+                template: "public static ___ IsPerfectTree(___<int> bt) {\n",
+                solution: "public static bool IsPerfectTree(BinNode<int> bt) {\n",
+                closing: ""
+              },
+              {
+                instruction: "שלב 2: תנאי עצירה / טיפול בעץ ריק. מה נחזיר אם העץ (bt) שהתקבל הוא null?",
+                keywords: ["if", "null", "return", "false"],
+                hints: ["בדקו האם העץ (bt) שווה ל-null.", "עץ ריק לא נחשב לעץ שלם, לכן החזירו שקר."],
+                template: "    if (bt == ___) return ___;\n",
+                solution: "    if (bt == null) return false;\n",
+                closing: ""
+              },
+              {
+                instruction: "שלב 3: חישוב גובה. היעזרו בפעולה GetHeight ושמרו את התוצאה שלה במשתנה בשם h.",
+                keywords: ["int", "h", "GetHeight", "bt"],
+                hints: ["הגדירו משתנה שלם: int h", "הפעילו עליו את GetHeight."],
+                template: "    int h = ___(bt);\n",
+                solution: "    int h = GetHeight(bt);\n",
+                closing: ""
+              },
+              {
+                instruction: "שלב 4: ספירת עלים. היעזרו בפעולה CountLeaves ושמרו את התוצאה שלה במשתנה בשם leaves.",
+                keywords: ["int", "leaves", "CountLeaves", "bt"],
+                hints: ["הגדירו משתנה שלם: int leaves", "הפעילו עליו את CountLeaves."],
+                template: "    int leaves = ___(bt);\n",
+                solution: "    int leaves = CountLeaves(bt);\n",
+                closing: ""
+              },
+              {
+                instruction: "שלב 5: בדיקה והחזרה. החזירו את תוצאת ההשוואה בין מספר העלים לבין 2 בחזקת הגובה (השתמשו ב-Math.Pow).",
+                keywords: ["return", "leaves", "==", "Math.Pow", "2", "h"],
+                hints: ["השתמשו ב-Math.Pow(2, h) כדי לחשב 2 בחזקת h.", "החזירו את הביטוי leaves == Math.Pow..."],
+                template: "    return leaves == Math.Pow(___, ___);\n",
+                solution: "    return leaves == Math.Pow(2, h);\n",
+                closing: "}"
+              }
+            ]
+          },
+          {
+            id: 4,
+            title: "שאלה 4: סכום 'צמתים עשירים'",
+            description: "נגדיר 'צומת עשיר' כצומת שערכו גדול מסכום הערכים של שני בניו יחד. כתבו פעולה המקבלת עץ בינארי של מספרים שלמים ומחזירה את סכום הערכים של כל הצמתים ה'עשירים' בעץ. שים לב: עלה לא ייחשב צומת עשיר.",
+            steps: [
+              {
+                instruction: "שלב 1: כותרת הפעולה. הגדירו פעולה בשם SumRichNodes שמחזירה סכום (מספר שלם) ומקבלת עץ.",
+                keywords: ["public", "static", "int", "BinNode", "SumRichNodes"],
+                hints: ["טיפוס ההחזרה צריך להיות int."],
+                template: "public static ___ SumRichNodes(___<int> bt) {\n",
+                solution: "public static int SumRichNodes(BinNode<int> bt) {\n",
+                closing: ""
+              },
+              {
+                instruction: "שלב 2: תנאי עצירה - חריגה. מה נחזיר אם העץ ריק (null)?",
+                keywords: ["if", "null", "return", "0"],
+                hints: ["אם העץ ריק לא נתרום שום סכום, לכן מחזירים 0."],
+                template: "    if (bt == ___) return ___;\n",
+                solution: "    if (bt == null) return 0;\n",
+                closing: ""
+              },
+              {
+                instruction: "שלב 3: תנאי עצירה - עלה. עלה לא נחשב עשיר. איך נזהה עלה (בעזרת HasLeft ו-HasRight) ומה נחזיר?",
+                keywords: ["HasLeft", "HasRight", "return", "0"],
+                hints: ["עלה הוא צומת שגם אין לו בן שמאלי וגם אין לו בן ימני.", "בדקו !bt.HasLeft() וגם !bt.HasRight()."],
+                template: "    if (!bt.___() && !bt.___()) return 0;\n",
+                solution: "    if (!bt.HasLeft() && !bt.HasRight()) return 0;\n",
+                closing: ""
+              },
+              {
+                instruction: "שלב 4: סכום בנים - אתחול ובדיקת צד שמאל. הגדירו משתנה sumChildren=0. במידה ויש בן שמאלי, הוסיפו את ערכו למשתנה זה.",
+                keywords: ["int", "sumChildren", "HasLeft", "GetLeft", "GetValue"],
+                hints: ["השתמשו ב-bt.HasLeft() כדי לוודא קיום בן שמאלי.", "קחו את הערך שלו ע\"י bt.GetLeft().GetValue()."],
+                template: "    int sumChildren = 0;\n    if (bt.HasLeft()) {\n        sumChildren += bt.___().___();\n    }\n",
+                solution: "    int sumChildren = 0;\n    if (bt.HasLeft()) sumChildren += bt.GetLeft().GetValue();\n",
+                closing: ""
+              },
+              {
+                instruction: "שלב 5: סכום בנים - בדיקת צד ימין. עשו את אותו הדבר עבור הבן הימני (הוסיפו את ערכו ל-sumChildren אם הוא קיים).",
+                keywords: ["if", "HasRight", "sumChildren", "GetRight", "GetValue"],
+                hints: ["השתמשו ב-bt.HasRight() וב-bt.GetRight().GetValue()."],
+                template: "    if (bt.___()) {\n        sumChildren += bt.___().___();\n    }\n",
+                solution: "    if (bt.HasRight()) sumChildren += bt.GetRight().GetValue();\n",
+                closing: ""
+              },
+              {
+                instruction: "שלב 6: עדכון הערך הנוכחי. הגדירו משתנה currentVal=0. אם ערך הצומת (GetValue) גדול מסכום בניו, עדכנו את המשתנה לערך הצומת.",
+                keywords: ["int", "currentVal", "GetValue", ">", "sumChildren"],
+                hints: ["בדקו האם bt.GetValue() > sumChildren."],
+                template: "    int currentVal = 0;\n    if (bt.___() > ___) {\n        currentVal = bt.___();\n    }\n",
+                solution: "    int currentVal = 0;\n    if (bt.GetValue() > sumChildren) {\n        currentVal = bt.GetValue();\n    }\n",
+                closing: ""
+              },
+              {
+                instruction: "שלב 7: צעד הרקורסיה. החזירו את סכום currentVal יחד עם הזימון הרקורסיבי של הפעולה על שני הבנים.",
+                keywords: ["return", "currentVal", "+", "SumRichNodes", "GetLeft", "GetRight"],
+                hints: ["החזירו: currentVal + SumRichNodes(הבן השמאלי) + SumRichNodes(הבן הימני)."],
+                template: "    return currentVal + ___(bt.GetLeft()) + ___(bt.GetRight());\n",
+                solution: "    return currentVal + SumRichNodes(bt.GetLeft()) + SumRichNodes(bt.GetRight());\n",
+                closing: "}"
+              }
+            ]
+          },
+          {
+            id: 5,
+            title: "שאלה 5: בדיקת מסלול",
+            description: "כתבו פעולה המקבלת עץ בינארי של מספרים שלמים ומספר שלם x. הפעולה תחזיר אמת אם קיים בעץ מסלול מהשורש ועד לאחד העלים שבו סכום כל הערכים שווה בדיוק ל-x, אחרת שקר.",
+            steps: [
+              {
+                instruction: "שלב 1: כותרת הפעולה. כתבו פעולה בשם HasPathSum שמחזירה אמת/שקר, ומקבלת עץ ומספר שלם x.",
+                keywords: ["public", "bool", "BinNode", "int", "x", "HasPathSum"],
+                hints: ["הפעולה צריכה לקבל 2 פרמטרים: העץ, והמספר x."],
+                template: "public static ___ HasPathSum(___<int> bt, ___ x) {\n",
+                solution: "public static bool HasPathSum(BinNode<int> bt, int x) {\n",
+                closing: ""
+              },
+              {
+                instruction: "שלב 2: תנאי עצירה ראשון - חריגה. מה נחזיר אם הגענו ל-null?",
+                keywords: ["if", "null", "return", "false"],
+                hints: ["אם העץ ריק, אין מסלול, ולכן מחזירים שקר."],
+                template: "    if (bt == ___) return ___;\n",
+                solution: "    if (bt == null) return false;\n",
+                closing: ""
+              },
+              {
+                instruction: "שלב 3: תנאי עצירה לגיזום המסלול. אם ערך הצומת (GetValue) כבר גדול מהסכום x שאנו מחפשים - אין טעם להמשיך לחפש מטה (בהנחה של מספרים חיוביים). מה נחזיר?",
+                keywords: ["if", "GetValue", ">", "x", "return", "false"],
+                hints: ["בדקו אם bt.GetValue() > x", "החזירו false."],
+                template: "    if (bt.___() > x) return ___;\n",
+                solution: "    if (bt.GetValue() > x) return false;\n",
+                closing: ""
+              },
+              {
+                instruction: "שלב 4: תנאי עצירה - הגענו לעלה. אם מדובר בעלה, אנחנו נחזיר 'אמת' רק אם ערך הצומת שווה בדיוק ל-x שנותר.",
+                keywords: ["HasLeft", "HasRight", "return", "GetValue", "==", "x"],
+                hints: ["בדקו אם זה עלה (!HasLeft && !HasRight).", "החזירו אמת אם bt.GetValue() == x."],
+                template: "    if (!bt.___() && !bt.___()) {\n        return bt.___() == x;\n    }\n",
+                solution: "    if (!bt.HasLeft() && !bt.HasRight()) {\n        return bt.GetValue() == x;\n    }\n",
+                closing: ""
+              },
+              {
+                instruction: "שלב 5: הכנה לרקורסיה. אם אנחנו ממשיכים לבנים, צריך לחפש אצלם סכום קטן יותר. הגדירו משתנה (למשל newSum) שיכיל את x פחות הערך של הצומת הנוכחי.",
+                keywords: ["int", "newSum", "x", "-", "GetValue"],
+                hints: ["הגדירו: int newSum = x - bt.GetValue();"],
+                template: "    int newSum = x - bt.___();\n",
+                solution: "    int newSum = x - bt.GetValue();\n",
+                closing: ""
+              },
+              {
+                instruction: "שלב 6: צעד הרקורסיה. עכשיו, קראו לפעולה על הבנים עם המשתנה newSum שיצרתם. השתמשו בקשר לוגי 'או' (||) ביניהם.",
+                keywords: ["return", "HasPathSum", "GetLeft", "GetRight", "newSum", "||"],
+                hints: ["צריך 'או' (||) בין הקריאה לבן השמאלי לימני תוך העברת newSum."],
+                template: "    return HasPathSum(bt.GetLeft(), ___) || \n           HasPathSum(bt.GetRight(), ___);\n",
+                solution: "    return HasPathSum(bt.GetLeft(), newSum) || \n           HasPathSum(bt.GetRight(), newSum);\n",
+                closing: "}"
+              }
+            ]
+          },
+          {
+            id: 6,
+            title: "שאלה 6: עץ מסלול אחיד",
+            description: "עץ 'דו-מספרי' הוא עץ בינארי שהערכים בו הם 1 או 2. כתבו פעולה שמחזירה אמת אם קיים בעץ מסלול מהשורש לעלה שבו כל הצמתים מכילים את אותו הערך. נכתוב קודם את הפעולה הראשית ואז את פעולת העזר.",
+            steps: [
+              {
+                instruction: "שלב 1: הפעולה הראשית. נתחיל מלכתוב את הפעולה המבוקשת - OnePath. היא מקבלת רק את שורש העץ.",
+                keywords: ["public", "bool", "OnePath", "BinNode", "int"],
+                hints: ["public static bool OnePath(BinNode<int> bt)"],
+                template: "public static ___ OnePath(___<int> bt) {\n",
+                solution: "public static bool OnePath(BinNode<int> bt) {\n",
+                closing: ""
+              },
+              {
+                instruction: "שלב 2: תנאי עצירה לפעולה הראשית. מה קורה אם העץ ריק?",
+                keywords: ["if", "null", "return", "false"],
+                hints: ["if (bt == null) return false;"],
+                template: "    if (bt == ___) return ___;\n",
+                solution: "    if (bt == null) return false;\n",
+                closing: ""
+              },
+              {
+                instruction: "שלב 3: הבנת הצורך בפעולת עזר. כדי לדעת אם המסלול אחיד, נצטרך לזכור את הערך שהיה בשורש ולהשוות אליו כלפי מטה. לשם כך 'נמציא' פעולת עזר (IsUniform). החזירו זימון שלה, כשהערך השני שמועבר אליה הוא ערך השורש (GetValue).",
+                keywords: ["return", "IsUniform", "bt", "GetValue"],
+                hints: ["החזירו: IsUniform(bt, bt.GetValue()); (פעולה זו תיכתב בשלב הבא)."],
+                template: "    return IsUniform(bt, bt.___());\n",
+                solution: "    return IsUniform(bt, bt.GetValue());\n}\n\n",
+                closing: ""
+              },
+              {
+                instruction: "שלב 4: יצירת פעולת העזר. כתבו עכשיו את הכותרת לפעולת העזר IsUniform. היא צריכה לקבל את העץ ואת הערך שאנו מחפשים לשמר לאורך המסלול (נקרא לו x).",
+                keywords: ["public", "bool", "BinNode", "int", "IsUniform", "x"],
+                hints: ["public static bool IsUniform(BinNode<int> bt, int x)"],
+                template: "public static ___ IsUniform(___<int> bt, ___ x) {\n",
+                solution: "public static bool IsUniform(BinNode<int> bt, int x) {\n",
+                closing: ""
+              },
+              {
+                instruction: "שלב 5: תנאי עצירה (עזר) 1. מה מחזירים אם הגענו ל-null?",
+                keywords: ["if", "null", "return", "false"],
+                hints: ["החזירו שקר."],
+                template: "    if (bt == ___) return ___;\n",
+                solution: "    if (bt == null) return false;\n",
+                closing: ""
+              },
+              {
+                instruction: "שלב 6: תנאי עצירה (עזר) 2. מה קורה אם הערך בצומת שונה (!=) מהערך שאנחנו צריכים (x)?",
+                keywords: ["if", "GetValue", "!=", "x", "return", "false"],
+                hints: ["אם הערך שונה מ-x, המסלול אינו אחיד. נחזיר שקר."],
+                template: "    if (bt.___() != x) return ___;\n",
+                solution: "    if (bt.GetValue() != x) return false;\n",
+                closing: ""
+              },
+              {
+                instruction: "שלב 7: תנאי עצירה (עזר) 3. מה קורה אם עברנו את התנאים הקודמים והגענו לעלה?",
+                keywords: ["if", "HasLeft", "HasRight", "return", "true"],
+                hints: ["אם זה עלה (אין בנים) והערך שלו תקין, מצאנו מסלול אחיד! נחזיר אמת."],
+                template: "    if (!bt.___() && !bt.___()) return ___;\n",
+                solution: "    if (!bt.HasLeft() && !bt.HasRight()) return true;\n",
+                closing: ""
+              },
+              {
+                instruction: "שלב 8: צעד הרקורסיה. שלבו את הקריאות לבן השמאלי והימני עבור x. באיזה קשר לוגי (וגם / או) נשתמש?",
+                keywords: ["return", "IsUniform", "GetLeft", "GetRight", "||", "x"],
+                hints: ["אנו שואלים 'האם קיים מסלול', לכן נשתמש ב'או' (||)."],
+                template: "    return IsUniform(bt.___(), x) || IsUniform(bt.___(), x);\n",
+                solution: "    return IsUniform(bt.GetLeft(), x) || IsUniform(bt.GetRight(), x);\n",
+                closing: "}"
+              }
+            ]
+          }
+        ];
 
-  const checkQ5 = () => handleCodeSubmit(5,
-    (a) => ({ isCorrect: a === 'currentindex' || a === 'this.currentindex' }),
-    'הצלת את המערכת מקריסה! אנחנו סורקים אך ורק עצמים שקיימים בפועל לפי המונה שלנו.',
-    () => 'נסו שוב. (ניתן להיעזר ברמז למטה)'
-  );
-
-  const checkQ6 = () => handleBugSubmit(6, 3,
-    'סכנת Aliasing נבלמה! הפעולה מחזירה מצביע ישיר לעצם מתוך המערך. גורם חיצוני יוכל לשנות את פרטי הסוכן הסודי שלנו מחוץ למחלקה!',
-    { 0: 'שמירת מצביע התחלתי לסוכן הראשון היא דרך תקנית למציאת מקסימום.', 1: 'הלולאה סורקת נכון מהסוכן השני (אינדקס 1) ועד לכמות הסוכנים בפועל (currentIndex).', 2: 'השוואת הרמות ועדכון סוכן המקסימום תקינים.' }
-  );
-
-  const checkQ7 = () => handleCodeSubmit(7,
-    (a) => ({ isCorrect: a === 'newagent(best)' || a === 'newagent(best.getalias(),best.getlevel())' }),
-    'חומת האבטחה הושלמה. החזרת עותק מנותק (Deep Copy) מגינה על הנתונים המקוריים של הצוות.',
-    () => 'נסו שוב. (ניתן להיעזר ברמז למטה)'
-  );
-
-  const checkQ8 = () => handleBugSubmit(8, 0,
-    'באג חריגה מצא! כאשר המערך מלא (כלומר currentIndex שווה ל-Length), הלולאה תרוץ עד האיבר האחרון. כשתגיע אליו, הפנייה ל-j+1 תחרוג מגבולות המערך ותזרוק IndexOutOfRangeException.',
-    { 1: 'העתקת האיבר הבא (j+1) לתוך המיקום הנוכחי (j) היא הדרך הנכונה לדחוס איברים שמאלה.', 2: 'סגירת הבלוק תקינה.', 3: 'הקטנת המונה (currentIndex--) הכרחית בסוף המחיקה כדי לסמן שיש לנו סוכן אחד פחות.' }
-  );
-
-  const checkQ9 = () => handleCodeSubmit(9,
-    (a) => ({ isCorrect: a === 'this.currentindex-1' || a === 'currentindex-1' }),
-    'תיקון מושלם! עצרנו צעד אחד קודם כדי לא לחרוג עם j+1 במקרה של מערך מלא.',
-    () => 'נסו שוב. (ניתן להיעזר ברמז למטה)'
-  );
-
-  const checkQ10 = () => handleBugSubmit(10, 2,
-    'באג Early Exit אותר! הפקודה else return false בתוך הלולאה מסיימת את הפעולה כולה מיד אחרי שבדקנו רק את הסוכן הראשון! היא לא מאפשרת להמשיך לחפש.',
-    { 0: 'לולאת החיפוש סורקת את הסוכנים הקיימים (עד currentIndex) בצורה תקינה.', 1: 'התנאי לבדיקה אם שם הקוד תואם (ולהחזיר מיד True אם כן) - הוא נכון לחלוטין.', 3: 'סגירת הבלוק תקינה.' }
-  );
-
-  const checkQ11 = () => handleCodeSubmit(11,
-    (a) => ({ isCorrect: a === 'false' }),
-    'מעולה! רק אם סיימנו לסרוק את *כל* הלולאה ולא מצאנו את שם הסוכן, אז נוכל להכריז שהוא לא קיים ולהחזיר שקר.',
-    () => 'נסו שוב. (ניתן להיעזר ברמז למטה)'
-  );
-
-  const checkQ12 = () => handleCodeSubmit(12,
-    (a) => ({ isCorrect: a === 'agents[i].getalias()' || a === 'this.agents[i].getalias()' }),
-    'מעולה! הצלחת למשוך את הנתון הפרטי (שם הקוד) באמצעות הפעולה הציבורית.',
-    () => 'נסו שוב. (ניתן להיעזר ברמז למטה)'
-  );
-
-  const checkQ13 = () => handleCodeSubmit(13,
-    (a) => ({ isCorrect: a === 'agents[i].getlevel()' || a === 'this.agents[i].getlevel()' }),
-    'שליפת נתונים מתוך מערך עצמים הושלמה בהצלחה! השתלטת על המערכת.',
-    () => 'נסו שוב. (ניתן להיעזר ברמז למטה)'
-  );
-
-  // --- Data Arrays for Bug Hunting Questions ---
-  const q2Options = [
-    { id: 0, code: "if (this.currentIndex >= this.agents.Length) return false;" },
-    { id: 1, code: "this.agents[this.currentIndex] = new Agent(a);" },
-    { id: 2, code: "return true; // סיום הוספה" }
-  ];
-
-  const q4Options = [
-    { id: 0, code: "int sum = 0;" },
-    { id: 1, code: "for (int i = 0; i < this.agents.Length; i++) {" },
-    { id: 2, code: "  sum += this.agents[i].GetLevel();" },
-    { id: 3, code: "}\nreturn (double)sum / this.currentIndex;" }
-  ];
-
-  const q6Options = [
-    { id: 0, code: "Agent best = this.agents[0];" },
-    { id: 1, code: "for (int i = 1; i < this.currentIndex; i++) {" },
-    { id: 2, code: "  if (this.agents[i].GetLevel() > best.GetLevel()) \n      best = this.agents[i];" },
-    { id: 3, code: "}\nreturn best;" }
-  ];
-
-  const q8Options = [
-    { id: 0, code: "for (int j = index; j < this.currentIndex; j++) {" },
-    { id: 1, code: "  this.agents[j] = this.agents[j+1];" },
-    { id: 2, code: "}" },
-    { id: 3, code: "this.currentIndex--;" }
-  ];
-
-  const q10Options = [
-    { id: 0, code: "for (int i = 0; i < this.currentIndex; i++) {" },
-    { id: 1, code: "  if (this.agents[i].GetAlias() == searchName) \n      return true;" },
-    { id: 2, code: "  else \n      return false;" },
-    { id: 3, code: "}\nreturn false;" }
-  ];
-
-  // --- Helper Components ---
-  const renderBugOptions = (qNum, options) => (
-    <div className="flex flex-col gap-1 my-1">
-      {options.map((opt) => (
-        <button
-          key={opt.id}
-          onClick={() => updateAnswer(qNum, opt.id)}
-          className={`text-left px-2 py-1.5 rounded transition-all whitespace-pre overflow-x-hidden text-ellipsis text-xs sm:text-sm ${
-            answers[qNum] === opt.id 
-              ? 'bg-fuchsia-950/80 border border-fuchsia-500 text-fuchsia-200' 
-              : 'bg-transparent border border-transparent hover:bg-violet-900/40 text-violet-200'
-          }`}
-          dir="ltr"
-        >
-          {opt.code}
-        </button>
-      ))}
-    </div>
-  );
-
-  const renderHintAndReveal = (hintText, revealText) => (
-    <div className="flex flex-col gap-3 mt-5 pt-4 border-t border-violet-800/50">
-      {!showHint && (
-        <button onClick={() => setShowHint(true)} className="text-sm self-start flex items-center gap-2 bg-violet-900/50 hover:bg-violet-800/50 text-fuchsia-300 px-4 py-2 rounded-lg border border-violet-700 transition-colors shadow-sm">
-          <RadioReceiver className="w-4 h-4" /> בקש רמז
-        </button>
-      )}
-      {showHint && (
-        <div className="bg-fuchsia-950/30 border border-fuchsia-800/40 p-3 sm:p-4 rounded-lg text-sm text-fuchsia-200 flex flex-col gap-4 animate-in fade-in duration-300">
-          <div className="flex items-start gap-2">
-            <RadioReceiver className="w-5 h-5 shrink-0 mt-0.5 text-fuchsia-400" />
-            <p className="text-sm sm:text-base"><span className="font-bold text-fuchsia-400">האקר בכיר:</span> "{hintText}"</p>
-          </div>
-          {!showReveal && (
-            <button onClick={() => setShowReveal(true)} className="text-sm self-start bg-rose-900/50 hover:bg-rose-800/50 text-rose-300 px-4 py-2 rounded-lg border border-rose-700 transition-colors shadow-sm">
-              עדיין תקוע? גלה לי
-            </button>
-          )}
-          {showReveal && (
-            <div className="p-3 bg-black/60 rounded border border-rose-900/50 text-rose-200 animate-in fade-in zoom-in duration-300 overflow-x-auto">
-              <span className="font-bold text-rose-400 block mb-1">תשובה / תבנית השלמה:</span>
-              <span className="font-mono text-cyan-300 text-sm sm:text-base whitespace-nowrap" dir="ltr">{revealText}</span>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-
-  return (
-    <div dir="rtl" className="min-h-screen bg-[#0a0514] text-violet-100 font-sans flex items-center justify-center p-2 sm:p-4 selection:bg-fuchsia-900/50">
-      <div className="max-w-3xl w-full bg-[#130b29] rounded-xl shadow-[0_0_40px_rgba(168,85,247,0.15)] border border-violet-800/50 overflow-hidden relative">
-        
-        {/* Header */}
-        <div className="bg-[#0f0822] p-3 sm:p-5 flex items-center gap-2 sm:gap-3 border-b border-fuchsia-900/30">
-          <Ghost className="text-fuchsia-500 w-5 h-5 sm:w-7 sm:h-7 shrink-0" />
-          <h1 className="text-base sm:text-2xl font-bold text-fuchsia-400 tracking-tight line-clamp-1 sm:line-clamp-none">מבצע "חוליית רפאים": סייבר עצמים</h1>
-          <div className="mr-auto text-[10px] sm:text-sm text-fuchsia-300 bg-fuchsia-950/40 px-2 sm:px-3 py-1 rounded-full border border-fuchsia-800/40 font-mono whitespace-nowrap">
-            {step < 14 ? `שלב ${step} / 13` : 'המבצע הושלם'}
-          </div>
-        </div>
-
-        {/* Content Area */}
-        <div className="p-4 sm:p-6 lg:p-8">
+        function checkSyntaxWarnings(userInput, expectedSolution) {
+          let warnings = [];
           
-          {/* Step 0: Intro */}
-          {step === 0 && (
-            <div className="space-y-4 sm:space-y-5 animate-in fade-in duration-500">
-              <h2 className="text-xl sm:text-2xl font-bold text-white">הזדהות ותדריך מבצעי</h2>
-              <p className="text-sm sm:text-base leading-relaxed text-violet-200">
-                {isF === true ? 'סוכנת, ברוכה הבאה' : (gender === 'M' ? 'סוכן, ברוך הבא' : 'ברוכים הבאים')} לשלב המעשי. כעת ניישם את מה שלמדנו ונפרוץ למערך העצמים.
-              </p>
-              <p className="text-sm sm:text-base leading-relaxed text-violet-200">
-                מטרתנו היא מחלקת <code>CyberSquad</code> (צוות סייבר) של חברת האקרים יריבה. הצוות מכיל מערך של עצמים מסוג <code>Agent</code>. עליכם לאתר ולתקן 13 פרצות.
-              </p>
+          if (expectedSolution.includes(';') && !userInput.includes(';')) {
+            warnings.push("שכחת נקודה-פסיק (;) בסוף הפקודה.");
+          }
+
+          const methods = ['HasLeft', 'HasRight', 'GetLeft', 'GetRight', 'GetValue', 'GetHeight', 'CountLeaves', 'IsPerfectTree', 'SumRichNodes', 'HasPathSum', 'IsUniform', 'OnePath'];
+          
+          methods.forEach(method => {
+            const containsMethod = new RegExp(method, "i").test(userInput);
+            const hasParentheses = new RegExp(method + "\\s*\\(", "i").test(userInput);
+            if (containsMethod && !hasParentheses) {
+              warnings.push(`שכחת סוגריים () בקריאה לפעולה ${method}.`);
+            }
+          });
+
+          return warnings;
+        }
+
+        function highlightCode(code) {
+          return code
+            .replace(/(public|static|bool|int|if|return|double)/g, '<span class="text-pink-400">$1</span>')
+            .replace(/(true|false|null)/g, '<span class="text-orange-400">$1</span>')
+            .replace(/(\/\/.*)/g, '<span class="text-slate-500 italic">$1</span>')
+            .replace(/(Math\.Pow|GetHeight|CountLeaves|HasLeft|HasRight|GetLeft|GetRight|GetValue|IsPerfectTree|SumRichNodes|HasPathSum|IsUniform|OnePath)/g, '<span class="text-blue-300">$1</span>')
+            .replace(/(BinNode)/g, '<span class="text-emerald-300">$1</span>');
+        }
+
+        function WorksheetApp() {
+          const [activeQuestionIdx, setActiveQuestionIdx] = useState(0);
+          const [activeStepIdx, setActiveStepIdx] = useState(0);
+          const [userInput, setUserInput] = useState('');
+          const [hintLevel, setHintLevel] = useState(0);
+          const [feedback, setFeedback] = useState(null); 
+          const [accumulatedCode, setAccumulatedCode] = useState("");
+          const [isQuestionComplete, setIsQuestionComplete] = useState(false);
+          const [showIntro, setShowIntro] = useState(true);
+          
+          const [completedCodes, setCompletedCodes] = useState({});
+          const [showCertificate, setShowCertificate] = useState(false);
+          const [copied, setCopied] = useState(false);
+
+          const currentQuestion = questionsData[activeQuestionIdx];
+          const currentStep = currentQuestion.steps[activeStepIdx];
+
+          const loadQuestion = (idx) => {
+            setActiveQuestionIdx(idx);
+            setActiveStepIdx(0);
+            setUserInput('');
+            setHintLevel(0);
+            setFeedback(null);
+            setAccumulatedCode("");
+            setIsQuestionComplete(false);
+          };
+
+          const handleCheck = () => {
+            if (!userInput.trim()) return;
+
+            if (userInput.includes('___')) {
+              setFeedback({ 
+                type: 'error', 
+                message: 'נא להשלים את כל קווי הריק (___) עם הקוד המתאים לפני הבדיקה.' 
+              });
+              return;
+            }
+
+            const inputLower = userInput.toLowerCase();
+            const missingKeywords = currentStep.keywords.filter(kw => !inputLower.includes(kw.toLowerCase()));
+            
+            if (missingKeywords.length === 0) {
+              const warnings = checkSyntaxWarnings(userInput, currentStep.solution);
+              let waitTime = 1500; 
               
-              <div className="bg-fuchsia-950/30 border border-fuchsia-800/40 p-3 rounded-lg text-sm text-fuchsia-200 flex items-start gap-2 mb-4">
-                <Info className="w-5 h-5 shrink-0 mt-0.5 text-fuchsia-400" />
-                <p>
-                  <strong className="text-fuchsia-400">הנחיית מבצע קריטית:</strong> במערך של עצמים, אנו משתמשים <strong className="underline">אך ורק בשיטת המונה (currentIndex)</strong>. כל תא ריק פשוט מכיל <code>null</code>.
-                </p>
-              </div>
-
-              <div className="space-y-2 mt-4">
-                <label className="text-fuchsia-400 text-sm font-semibold uppercase tracking-wider">שם הצופן שלך (שם מלא):</label>
-                <input 
-                  type="text" 
-                  value={agentName}
-                  onChange={(e) => setAgentName(e.target.value)}
-                  placeholder="הכנס שם מלא לאימות מול השרת..."
-                  className="w-full bg-violet-950/30 border border-violet-700/50 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-fuchsia-500 transition-all placeholder:text-violet-700"
-                />
-              </div>
-
-              <div className="space-y-2 mt-4">
-                <label className="text-fuchsia-400 text-sm font-semibold uppercase tracking-wider">סיווג מגדר (לצורך תקשורת מוצפנת):</label>
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-1">
-                  <button 
-                    onClick={() => setGender('M')} 
-                    className={`flex-1 py-3 rounded-lg border transition-all flex items-center justify-center gap-2 ${gender === 'M' ? 'bg-fuchsia-600/50 border-fuchsia-400 text-white shadow-[0_0_10px_rgba(192,38,211,0.3)]' : 'bg-violet-950/30 border-violet-700/50 text-violet-400 hover:bg-violet-900/40'}`}
-                  >
-                    👨‍💻 סוכן
-                  </button>
-                  <button 
-                    onClick={() => setGender('F')} 
-                    className={`flex-1 py-3 rounded-lg border transition-all flex items-center justify-center gap-2 ${gender === 'F' ? 'bg-fuchsia-600/50 border-fuchsia-400 text-white shadow-[0_0_10px_rgba(192,38,211,0.3)]' : 'bg-violet-950/30 border-violet-700/50 text-violet-400 hover:bg-violet-900/40'}`}
-                  >
-                    👩‍💻 סוכנת
-                  </button>
-                </div>
-              </div>
-
-              <button onClick={nextStep} disabled={agentName.trim().length < 2 || !gender} className="mt-6 flex items-center gap-2 bg-fuchsia-600 hover:bg-fuchsia-500 disabled:opacity-50 text-white px-4 sm:px-6 py-3 rounded-lg font-bold w-full justify-center shadow-[0_0_15px_rgba(192,38,211,0.4)] transition-all">
-                <FileLock2 className="w-5 h-5 shrink-0" />
-                <span className="truncate">{isF ? 'אשרי תדריך והתחילי פריצה למבנה נתונים' : 'אשר תדריך והתחל פריצה למבנה נתונים'}</span>
-              </button>
-            </div>
-          )}
-
-          {/* Step 1 */}
-          {step === 1 && (
-            <div className="space-y-4 animate-in fade-in duration-500">
-               <div className="flex items-start gap-3">
-                <span className="bg-fuchsia-900/50 text-fuchsia-400 p-2 rounded-lg shrink-0"><Code className="w-5 h-5"/></span>
-                <div className="flex-1">
-                  <h2 className="text-lg font-bold text-white">משימה 1: יצירת מערך העצמים (הפעולה הבונה)</h2>
-                  <p className="text-sm text-violet-300 mt-1">
-                    לפניך מבנה המחלקה והפעולה הבונה (Constructor). עלינו להקצות מקום בזיכרון (Instantiate) למערך הסוכנים. {isF ? 'השלימי' : 'השלם'} את הקוד שמאתחל את המערך בגודל <code>maxSize</code>.
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-[#0a0514] rounded-lg p-3 font-mono text-xs sm:text-sm text-violet-200 border border-violet-800/50 overflow-x-auto" dir="ltr">
-<pre className="leading-relaxed">
-<span className="text-fuchsia-400">class</span> <span className="text-cyan-300">CyberSquad</span> {'{\n'}
-  <span className="text-fuchsia-400">private</span> Agent[] agents;{'\n'}
-  <span className="text-fuchsia-400">private int</span> currentIndex;{'\n\n'}
-  <span className="text-fuchsia-400">public</span> <span className="text-cyan-300">CyberSquad</span>(<span className="text-fuchsia-400">int</span> maxSize) {'{\n'}
-    <span className="text-fuchsia-400">this</span>.currentIndex = <span className="text-orange-400">0</span>;{'\n'}
-    <span className="text-fuchsia-400">this</span>.agents = <input type="text" value={answers[1]} onChange={(e) => updateAnswer(1, e.target.value)} placeholder="..." className="bg-violet-950 text-fuchsia-300 px-2 py-1 rounded border border-violet-700 focus:border-fuchsia-500 w-[100px] sm:w-[160px] md:w-[220px] mx-1" dir="ltr" spellCheck="false"/>;{'\n'}
-  {'}\n'}
-{'}'}
-</pre>
-              </div>
+              if (warnings.length > 0) {
+                setFeedback({ 
+                  type: 'warning-pass', 
+                  message: 'הכיוון נכון! מתקדם לשלב הבא... אבל שים לב לתיקוני התחביר הבאים:', 
+                  details: warnings 
+                });
+                waitTime = 4000; 
+              } else {
+                setFeedback({ type: 'success', message: 'מעולה! השלמת את השלב בהצלחה.' });
+              }
               
-              {renderHintAndReveal(
-                "יצירת מערך מחייבת תמיד את המילה new, סוג העצם וסוגריים מרובעים המכילים את הגודל.",
-                "new Agent[maxSize]"
-              )}
+              setTimeout(() => {
+                const newAccumulated = accumulatedCode + currentStep.solution;
+                if (activeStepIdx < currentQuestion.steps.length - 1) {
+                  setAccumulatedCode(newAccumulated);
+                  setActiveStepIdx(prev => prev + 1);
+                  setUserInput('');
+                  setHintLevel(0);
+                  setFeedback(null);
+                } else {
+                  const finalCode = newAccumulated + currentStep.closing;
+                  setAccumulatedCode(finalCode);
+                  setCompletedCodes(prev => ({ ...prev, [activeQuestionIdx]: finalCode }));
+                  setIsQuestionComplete(true);
+                }
+              }, waitTime);
 
-              {error && <div className="flex gap-2 text-red-400 bg-red-950/50 p-3 rounded-lg text-sm mt-2"><XCircle className="w-5 h-5 shrink-0" /><p>{error}</p></div>}
-              {successMsg && <div className="flex gap-2 text-fuchsia-400 bg-fuchsia-950/30 p-3 rounded-lg text-sm mt-2"><CheckCircle2 className="w-5 h-5 shrink-0" /><p>{successMsg}</p></div>}
-              
-              <button onClick={checkQ1} disabled={answers[1].trim() === '' || successMsg !== ''} className="mt-4 flex items-center gap-2 bg-fuchsia-600 hover:bg-fuchsia-500 disabled:opacity-50 text-white px-4 sm:px-6 py-3 rounded-lg font-semibold w-full justify-center shadow-lg shadow-fuchsia-900/20">
-                {successMsg ? 'מתקדם...' : 'הזרק קוד פריצה'}
-                {!successMsg && <Play className="w-4 h-4 ml-1 fill-current" />}
-              </button>
-            </div>
-          )}
+            } else {
+              setFeedback({ 
+                type: 'error', 
+                message: 'חסרים חלקים קריטיים בקוד שלך. נסה שוב או בקש רמז!',
+                details: [`חסרות מילות מפתח או סימנים כמו: ${missingKeywords.slice(0, 3).join(', ')}`]
+              });
+            }
+          };
 
-          {/* Step 2 */}
-          {step === 2 && (
-            <div className="space-y-4 animate-in fade-in duration-500">
-               <div className="flex items-start gap-3">
-                <span className="bg-rose-900/50 text-rose-400 p-2 rounded-lg shrink-0"><Bug className="w-5 h-5"/></span>
-                <div className="flex-1">
-                  <h2 className="text-lg font-bold text-white">משימה 2: הוספת סוכן (באג השמה בשיטת המונה)</h2>
-                  <p className="text-sm text-violet-300 mt-1">ניסינו להוסיף סוכן חדש למערך בשיטת <code>currentIndex</code>, אבל משהו חסר בפעולה. כל סוכן חדש שמוסיפים פשוט דורס את הקודם! היכן שגיאת הלוגיקה?</p>
-                </div>
-              </div>
-              <div className="bg-[#0a0514] rounded-lg p-3 font-mono text-[10px] sm:text-xs md:text-sm text-violet-200 border border-violet-800/50 overflow-x-auto" dir="ltr">
-<pre className="leading-snug"><span className="text-fuchsia-400">public bool</span> <span className="text-cyan-300">AddAgent</span>(Agent a) {'{\n'}</pre>
-                {renderBugOptions(2, q2Options)}
-<pre className="leading-snug">{'}'}</pre>
-              </div>
+          const handleHint = () => {
+            if (hintLevel < currentStep.hints.length) {
+              setHintLevel(prev => prev + 1);
+            } else {
+              setUserInput(currentStep.template);
+              setFeedback({ 
+                type: 'info', 
+                message: 'הנה תבנית חצי-מוכנה לעזרה. העתיקו, השלימו את קווי הריק (___) ולחצו על בדיקה.' 
+              });
+            }
+          };
 
-              {renderHintAndReveal(
-                "משהו חסר לפני שמחזירים true ומסיימים את הפעולה. מה עם המונה שלנו שאמור להתקדם לתא הבא?",
-                "בשורה השלישית: return true; - חסר קידום של currentIndex לפני השורה הזו."
-              )}
+          const copyToClipboard = () => {
+            const allCodeString = questionsData
+              .map((q, idx) => completedCodes[idx] ? `// --- ${q.title} ---\n${completedCodes[idx]}` : '')
+              .filter(Boolean)
+              .join('\n\n');
 
-              {error && <div className="flex gap-2 text-red-400 bg-red-950/50 p-3 rounded-lg text-sm mt-2"><XCircle className="w-5 h-5 shrink-0" /><p>{error}</p></div>}
-              {successMsg && <div className="flex gap-2 text-rose-400 bg-rose-950/50 p-3 rounded-lg text-sm mt-2"><CheckCircle2 className="w-5 h-5 shrink-0" /><p>{successMsg}</p></div>}
-              
-              <button onClick={checkQ2} disabled={answers[2] === null || successMsg !== ''} className="mt-4 flex items-center gap-2 bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-white px-4 sm:px-6 py-3 rounded-lg font-semibold w-full justify-center shadow-lg shadow-rose-900/20">
-                סמן חולשה <Bug className="w-4 h-4 ml-1" />
-              </button>
-            </div>
-          )}
+            const textField = document.createElement('textarea');
+            textField.innerText = allCodeString;
+            document.body.appendChild(textField);
+            textField.select();
+            document.execCommand('copy');
+            textField.remove();
+            
+            setCopied(true);
+            setTimeout(() => setCopied(false), 3000);
+          };
 
-          {/* Step 3 */}
-          {step === 3 && (
-            <div className="space-y-4 animate-in fade-in duration-500">
-               <div className="flex items-start gap-3">
-                <span className="bg-fuchsia-900/50 text-fuchsia-400 p-2 rounded-lg shrink-0"><Code className="w-5 h-5"/></span>
-                <div className="flex-1">
-                  <h2 className="text-lg font-bold text-white">משימה 3: תיקון מנגנון ההוספה</h2>
-                  <p className="text-sm text-violet-300 mt-1">כדי ששיטת המונה תעבוד כראוי, כתבו את הפקודה החסרה שתקדם אותנו אל התא הפנוי הבא, רגע לפני ההחזרה.</p>
-                </div>
-              </div>
-              
-              <div className="bg-[#0a0514] rounded-lg p-3 font-mono text-xs sm:text-sm text-violet-200 border border-violet-800/50 overflow-x-auto" dir="ltr">
-<pre className="leading-relaxed">
-<span className="text-fuchsia-400">public bool</span> <span className="text-cyan-300">AddAgent</span>(Agent a) {'{\n'}
-  <span className="text-fuchsia-400">if</span> (<span className="text-fuchsia-400">this</span>.currentIndex &gt;= <span className="text-fuchsia-400">this</span>.agents.Length) <span className="text-fuchsia-400">return false</span>;{'\n'}
-  <span className="text-fuchsia-400">this</span>.agents[<span className="text-fuchsia-400">this</span>.currentIndex] = <span className="text-fuchsia-400">new</span> Agent(a);{'\n'}
-  <input type="text" value={answers[3]} onChange={(e) => updateAnswer(3, e.target.value)} placeholder="..." className="bg-violet-950 text-fuchsia-300 px-2 py-1 rounded border border-violet-700 focus:border-fuchsia-500 w-[100px] sm:w-[180px] md:w-[220px] mx-1 text-left" dir="ltr" spellCheck="false"/>{'\n'}
-  <span className="text-fuchsia-400">return true</span>;{'\n'}
-{'}'}
-</pre>
-              </div>
+          if (showCertificate) {
+            const isFullCompletion = !!completedCodes[3]; 
+            const allCodeString = questionsData
+              .map((q, idx) => completedCodes[idx] ? `// --- ${q.title} ---\n${completedCodes[idx]}` : '')
+              .filter(Boolean)
+              .join('\n\n');
 
-              {renderHintAndReveal(
-                "עלינו להגדיל (לקדם) את המשתנה currentIndex ב-1.",
-                "this.currentIndex++;"
-              )}
-
-              {error && <div className="flex gap-2 text-red-400 bg-red-950/50 p-3 rounded-lg text-sm mt-2"><XCircle className="w-5 h-5 shrink-0" /><p>{error}</p></div>}
-              {successMsg && <div className="flex gap-2 text-fuchsia-400 bg-fuchsia-950/30 p-3 rounded-lg text-sm mt-2"><CheckCircle2 className="w-5 h-5 shrink-0" /><p>{successMsg}</p></div>}
-              <button onClick={checkQ3} disabled={answers[3].trim() === '' || successMsg !== ''} className="mt-4 flex items-center gap-2 bg-fuchsia-600 hover:bg-fuchsia-500 disabled:opacity-50 text-white px-4 sm:px-6 py-3 rounded-lg font-semibold w-full justify-center shadow-lg shadow-fuchsia-900/20">
-                הזרק קוד פריצה <Play className="w-4 h-4 ml-1" />
-              </button>
-            </div>
-          )}
-
-          {/* Step 4 */}
-          {step === 4 && (
-            <div className="space-y-4 animate-in fade-in duration-500">
-               <div className="flex items-start gap-3">
-                <span className="bg-rose-900/50 text-rose-400 p-2 rounded-lg shrink-0"><Bug className="w-5 h-5"/></span>
-                <div className="flex-1">
-                  <h2 className="text-lg font-bold text-white">משימה 4: קריסת מערכת (NullReference)</h2>
-                  <p className="text-sm text-violet-300 mt-1">אנו מנסים לחשב את הרמה הממוצעת של הצוות. אבל התוכנית קורסת מיד עם שגיאת עצמים נפוצה: `NullReferenceException`! איזו שורה גורמת לבעיה כשיש לנו תאים ריקים?</p>
-                </div>
-              </div>
-              
-              <div className="bg-[#0a0514] rounded-lg p-3 font-mono text-[10px] sm:text-xs md:text-sm text-violet-200 border border-violet-800/50 overflow-x-auto" dir="ltr">
-<pre className="leading-snug"><span className="text-fuchsia-400">public double</span> <span className="text-cyan-300">GetAverageLevel</span>() {'{\n'}</pre>
-                {renderBugOptions(4, q4Options)}
-<pre className="leading-snug">{'}'}</pre>
-              </div>
-
-              {renderHintAndReveal(
-                "המערך לא תמיד מלא! שאר התאים הם null. האם זה נכון לתת ללולאה לרוץ עד סוף המערך (Length)?",
-                "השורה השנייה: הלולאה רצה עד Length במקום לרוץ רק עד המונה שלנו."
-              )}
-
-              {error && <div className="flex gap-2 text-red-400 bg-red-950/50 p-3 rounded-lg text-sm mt-2"><XCircle className="w-5 h-5 shrink-0" /><p>{error}</p></div>}
-              {successMsg && <div className="flex gap-2 text-rose-400 bg-rose-950/50 p-3 rounded-lg text-sm mt-2"><CheckCircle2 className="w-5 h-5 shrink-0" /><p>{successMsg}</p></div>}
-              <button onClick={checkQ4} disabled={answers[4] === null || successMsg !== ''} className="mt-4 flex items-center gap-2 bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-white px-4 sm:px-6 py-3 rounded-lg font-semibold w-full justify-center shadow-lg shadow-rose-900/20">
-                סמן חולשה <Bug className="w-4 h-4 ml-1" />
-              </button>
-            </div>
-          )}
-
-          {/* Step 5 */}
-          {step === 5 && (
-            <div className="space-y-4 animate-in fade-in duration-500">
-               <div className="flex items-start gap-3">
-                <span className="bg-fuchsia-900/50 text-fuchsia-400 p-2 rounded-lg shrink-0"><Code className="w-5 h-5"/></span>
-                <div className="flex-1">
-                  <h2 className="text-lg font-bold text-white">משימה 5: תיקון הקריסה (מניעת גישה ל-Null)</h2>
-                  <p className="text-sm text-violet-300 mt-1">במערך עצמים, תא ריק הוא פשוט <code>null</code>. אי אפשר להפעיל עליו <code>GetLevel()</code>! במקום לרוץ עד סוף המערך (<code>Length</code>), עד לאן הלולאה צריכה באמת לרוץ בשיטת המונה שלנו?</p>
-                </div>
-              </div>
-              <div className="bg-[#0a0514] rounded-lg p-3 font-mono text-xs sm:text-sm text-violet-200 border border-violet-800/50 overflow-x-auto" dir="ltr">
-<pre className="leading-relaxed">
-<span className="text-fuchsia-400">for</span> (<span className="text-fuchsia-400">int</span> i = <span className="text-orange-400">0</span>; i &lt; <input type="text" value={answers[5]} onChange={(e) => updateAnswer(5, e.target.value)} placeholder="..." className="bg-violet-950 text-fuchsia-300 px-2 py-1 rounded border border-violet-700 focus:border-fuchsia-500 w-[100px] sm:w-[150px] md:w-[200px] mx-1 text-center" dir="ltr" spellCheck="false"/>; i++) {'{\n'}
-  sum += <span className="text-fuchsia-400">this</span>.agents[i].GetLevel();{'\n'}
-{'}'}
-</pre>
-              </div>
-
-              {renderHintAndReveal(
-                "תכונת המונה של המחלקה אומרת לנו בדיוק כמה סוכנים אמיתיים קיימים כרגע. נרוץ עד אליה.",
-                "this.currentIndex"
-              )}
-
-              {error && <div className="flex gap-2 text-red-400 bg-red-950/50 p-3 rounded-lg text-sm mt-2"><XCircle className="w-5 h-5 shrink-0" /><p>{error}</p></div>}
-              {successMsg && <div className="flex gap-2 text-fuchsia-400 bg-fuchsia-950/30 p-3 rounded-lg text-sm mt-2"><CheckCircle2 className="w-5 h-5 shrink-0" /><p>{successMsg}</p></div>}
-              <button onClick={checkQ5} disabled={answers[5].trim() === '' || successMsg !== ''} className="mt-4 flex items-center gap-2 bg-fuchsia-600 hover:bg-fuchsia-500 disabled:opacity-50 text-white px-4 sm:px-6 py-3 rounded-lg font-semibold w-full justify-center shadow-lg shadow-fuchsia-900/20">
-                הזרק קוד פריצה <Play className="w-4 h-4 ml-1 fill-current" />
-              </button>
-            </div>
-          )}
-
-          {/* Step 6 */}
-          {step === 6 && (
-            <div className="space-y-4 animate-in fade-in duration-500">
-               <div className="flex items-start gap-3">
-                <span className="bg-rose-900/50 text-rose-400 p-2 rounded-lg shrink-0"><Bug className="w-5 h-5"/></span>
-                <div className="flex-1">
-                  <h2 className="text-lg font-bold text-white">משימה 6: פרצת Aliasing בעצמים</h2>
-                  <p className="text-sm text-violet-300 mt-1">אנו מושכים את העצם של "הסוכן הטוב ביותר". אבל הפעולה משאירה דלת פתוחה שתאפשר לשנות את תכונות הסוכן מרחוק (Aliasing), כי אנו מחזירים מצביע לעצם המקורי. איזו שורה מבצעת את המחדל?</p>
-                </div>
-              </div>
-              
-              <div className="bg-[#0a0514] rounded-lg p-3 font-mono text-[10px] sm:text-xs md:text-sm text-violet-200 border border-violet-800/50 overflow-x-auto" dir="ltr">
-<pre className="leading-snug"><span className="text-fuchsia-400">public</span> Agent <span className="text-cyan-300">GetTopAgent</span>() {'{\n'}</pre>
-                {renderBugOptions(6, q6Options)}
-<pre className="leading-snug">{'}'}</pre>
-              </div>
-
-              {renderHintAndReveal(
-                "אם מחזירים את העצם (best) ישירות, אנחנו נותנים החוצה את כתובת הזיכרון שלו. בדקו איך הפעולה מסתיימת.",
-                "השורה האחרונה: return best;"
-              )}
-
-              {error && <div className="flex gap-2 text-red-400 bg-red-950/50 p-3 rounded-lg text-sm mt-2"><XCircle className="w-5 h-5 shrink-0" /><p>{error}</p></div>}
-              {successMsg && <div className="flex gap-2 text-rose-400 bg-rose-950/50 p-3 rounded-lg text-sm mt-2"><CheckCircle2 className="w-5 h-5 shrink-0" /><p>{successMsg}</p></div>}
-              <button onClick={checkQ6} disabled={answers[6] === null || successMsg !== ''} className="mt-4 flex items-center gap-2 bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-white px-4 sm:px-6 py-3 rounded-lg font-semibold w-full justify-center shadow-lg shadow-rose-900/20">
-                סמן חולשה <Play className="w-4 h-4 ml-1 fill-current" />
-              </button>
-            </div>
-          )}
-
-          {/* Step 7 */}
-          {step === 7 && (
-            <div className="space-y-4 animate-in fade-in duration-500">
-               <div className="flex items-start gap-3">
-                <span className="bg-fuchsia-900/50 text-fuchsia-400 p-2 rounded-lg shrink-0"><Code className="w-5 h-5"/></span>
-                <div className="flex-1">
-                  <h2 className="text-lg font-bold text-white">משימה 7: חסימת ה-Aliasing</h2>
-                  <p className="text-sm text-violet-300 mt-1">כדי למנוע את פרצת האבטחה (Aliasing), עלינו ליצור ולהחזיר תעתיק (Deep Copy) של הסוכן. {isF ? 'השלימי' : 'השלם'} את פקודת ההחזרה בעזרת המשתנה <code>best</code> שכבר אותר, בעזרת הפעולה הבונה המעתיקה שלמדנו בתדריך.</p>
-                </div>
-              </div>
-
-              <div className="bg-[#0a0514] rounded-lg p-3 font-mono text-[10px] sm:text-xs md:text-sm text-violet-200 border border-violet-800/50 overflow-x-auto" dir="ltr">
-<pre className="leading-snug">
-<span className="text-violet-400">// best contains the maximum Agent</span>{'\n'}
-<span className="text-fuchsia-400">return</span> <input type="text" value={answers[7]} onChange={(e) => updateAnswer(7, e.target.value)} placeholder="..." className="bg-violet-950 text-fuchsia-300 px-2 py-1 rounded border border-violet-700 focus:border-fuchsia-500 w-[100px] sm:w-[150px] md:w-[220px] mx-1" dir="ltr" spellCheck="false"/>;{'\n'}
-</pre>
-              </div>
-
-              {renderHintAndReveal(
-                "כדי לנתק את המצביע, ניעזר במילה new ובפעולה הבונה המעתיקה שמקבלת את best כפרמטר.",
-                "new Agent(best)"
-              )}
-
-              {error && <div className="flex gap-2 text-red-400 bg-red-950/50 p-3 rounded-lg text-sm mt-2"><XCircle className="w-5 h-5 shrink-0" /><p>{error}</p></div>}
-              {successMsg && <div className="flex gap-2 text-fuchsia-400 bg-fuchsia-950/30 p-3 rounded-lg text-sm mt-2"><CheckCircle2 className="w-5 h-5 shrink-0" /><p>{successMsg}</p></div>}
-              <button onClick={checkQ7} disabled={answers[7] === '' || successMsg !== ''} className="mt-4 flex items-center gap-2 bg-fuchsia-600 hover:bg-fuchsia-500 disabled:opacity-50 text-white px-4 sm:px-6 py-3 rounded-lg font-semibold w-full justify-center shadow-lg shadow-fuchsia-900/20">
-                הזרק קוד פריצה <Play className="w-4 h-4 ml-1 fill-current" />
-              </button>
-            </div>
-          )}
-
-          {/* Step 8 */}
-          {step === 8 && (
-            <div className="space-y-4 animate-in fade-in duration-500">
-               <div className="flex items-start gap-3">
-                <span className="bg-rose-900/50 text-rose-400 p-2 rounded-lg shrink-0"><Bug className="w-5 h-5"/></span>
-                <div className="flex-1">
-                  <h2 className="text-lg font-bold text-white">משימה 8: באג מחיקה וחריגת גבולות</h2>
-                  <p className="text-sm text-violet-300 mt-1">אנו מסירים סוכן ודוחסים את כל הבאים אחריו שמאלה. הלולאה הזו עלולה לזרוק <code>IndexOutOfRangeException</code> כאשר המערך מלא לחלוטין. למה?</p>
-                </div>
-              </div>
-
-              <div className="bg-[#0a0514] rounded-lg p-3 font-mono text-[10px] sm:text-xs md:text-sm text-violet-200 border border-violet-800/50 overflow-x-auto" dir="ltr">
-<pre className="leading-snug"><span className="text-fuchsia-400">public void</span> <span className="text-cyan-300">RemoveAgentAt</span>(<span className="text-fuchsia-400">int</span> index) {'{\n'}</pre>
-                {renderBugOptions(8, q8Options)}
-<pre className="leading-snug">{'}'}</pre>
-              </div>
-
-              {renderHintAndReveal(
-                "כשמוחקים, דוחסים את האיברים שמאלה באמצעות העתקה של j+1 לתוך j. אם j מגיע ל-currentIndex במערך מלא (Length), לאיזה תא יפנה j+1?",
-                "השורה הראשונה: הלולאה רצה רחוק מדי ותחרוג מגבולות המערך כשהוא מלא."
-              )}
-
-              {error && <div className="flex gap-2 text-red-400 bg-red-950/50 p-3 rounded-lg text-sm mt-2"><XCircle className="w-5 h-5 shrink-0" /><p>{error}</p></div>}
-              {successMsg && <div className="flex gap-2 text-rose-400 bg-rose-950/50 p-3 rounded-lg text-sm mt-2"><CheckCircle2 className="w-5 h-5 shrink-0" /><p>{successMsg}</p></div>}
-              <button onClick={checkQ8} disabled={answers[8] === null || successMsg !== ''} className="mt-4 flex items-center gap-2 bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-slate-900 px-4 sm:px-6 py-3 rounded-lg font-semibold w-full justify-center shadow-lg shadow-rose-900/20">
-                סמן חולשה <Play className="w-4 h-4 ml-1" />
-              </button>
-            </div>
-          )}
-
-          {/* Step 9 */}
-          {step === 9 && (
-            <div className="space-y-4 animate-in fade-in duration-500">
-               <div className="flex items-start gap-3">
-                <span className="bg-fuchsia-900/50 text-fuchsia-400 p-2 rounded-lg shrink-0"><Code className="w-5 h-5"/></span>
-                <div className="flex-1">
-                  <h2 className="text-lg font-bold text-white">משימה 9: תיקון גבולות הדחיסה</h2>
-                  <p className="text-sm text-violet-300 mt-1">כדי למנוע את החריגה כשפונים אל התא הבא (j+1), עלינו לעצור את הלולאה צעד אחד מוקדם יותר ממונה האינדקס. {isF ? 'השלימי' : 'השלם'} את הגבול הנכון ללולאה.</p>
-                </div>
-              </div>
-
-              <div className="bg-[#0a0514] rounded-lg p-3 font-mono text-[10px] sm:text-xs md:text-sm text-violet-200 border border-violet-800/50 overflow-x-auto" dir="ltr">
-<pre className="leading-snug">
-<span className="text-fuchsia-400">for</span> (<span className="text-fuchsia-400">int</span> j = index; j &lt; <input type="text" value={answers[9]} onChange={(e) => updateAnswer(9, e.target.value)} placeholder="..." className="bg-violet-950 text-fuchsia-300 px-2 py-1 rounded border border-violet-700 focus:border-fuchsia-500 w-[100px] sm:w-[150px] md:w-[200px] mx-1" dir="ltr" spellCheck="false"/>; j++) {'{\n'}
-  <span className="text-fuchsia-400">this</span>.agents[j] = <span className="text-fuchsia-400">this</span>.agents[j+1];{'\n'}
-{'}'}
-</pre>
-              </div>
-
-              {renderHintAndReveal(
-                "עלינו להשתמש במונה currentIndex, אך להוריד ממנו 1 כדי לעצור בזמן.",
-                "this.currentIndex - 1"
-              )}
-
-              {error && <div className="flex gap-2 text-red-400 bg-red-950/50 p-3 rounded-lg text-sm mt-2"><XCircle className="w-5 h-5 shrink-0" /><p>{error}</p></div>}
-              {successMsg && <div className="flex gap-2 text-fuchsia-400 bg-fuchsia-950/30 p-3 rounded-lg text-sm mt-2"><CheckCircle2 className="w-5 h-5 shrink-0" /><p>{successMsg}</p></div>}
-              <button onClick={checkQ9} disabled={answers[9] === '' || successMsg !== ''} className="mt-4 flex items-center gap-2 bg-fuchsia-600 hover:bg-fuchsia-500 disabled:opacity-50 text-white px-4 sm:px-6 py-3 rounded-lg font-semibold w-full justify-center shadow-lg shadow-fuchsia-900/20">
-                הזרק קוד פריצה <Play className="w-4 h-4 ml-1" />
-              </button>
-            </div>
-          )}
-
-          {/* Step 10 */}
-          {step === 10 && (
-            <div className="space-y-4 animate-in fade-in duration-500">
-               <div className="flex items-start gap-3">
-                <span className="bg-rose-900/50 text-rose-400 p-2 rounded-lg shrink-0"><Bug className="w-5 h-5"/></span>
-                <div className="flex-1">
-                  <h2 className="text-lg font-bold text-white">משימה 10: חיפוש סוכן (באג Early Exit)</h2>
-                  <p className="text-sm text-violet-300 mt-1">
-                    המערכת מחפשת סוכן על פי שם הקוד שלו. אבל משום מה, אם הוא לא נמצא *בדיוק בתא הראשון* במערך, התוכנית תמיד מכריזה שהוא לא קיים ומסיימת! מה גרם לשגיאה בלולאה?
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-[#0a0514] rounded-lg p-3 font-mono text-[10px] sm:text-xs md:text-sm text-violet-200 border border-violet-800/50 overflow-x-auto" dir="ltr">
-<pre className="leading-snug"><span className="text-fuchsia-400">public bool</span> <span className="text-cyan-300">HasAgent</span>(<span className="text-fuchsia-400">string</span> searchName) {'{\n'}</pre>
-                {renderBugOptions(10, q10Options)}
-<pre className="leading-snug">{'}'}</pre>
-              </div>
-
-              {renderHintAndReveal(
-                "האם זה הגיוני שאם הסוכן הראשון שבדקנו הוא לא מי שאנחנו מחפשים, פשוט נוותר ונחזיר שקר (false) מיד? זה קוטע את הלולאה!",
-                "השורה השלישית: else return false;  (היא מונעת מהלולאה להמשיך לבדוק)"
-              )}
-
-              {error && <div className="flex gap-2 text-red-400 bg-red-950/50 p-3 rounded-lg text-sm mt-2"><XCircle className="w-5 h-5 shrink-0" /><p>{error}</p></div>}
-              {successMsg && <div className="flex gap-2 text-rose-400 bg-rose-950/50 p-3 rounded-lg text-sm mt-2"><CheckCircle2 className="w-5 h-5 shrink-0" /><p>{successMsg}</p></div>}
-              <button onClick={checkQ10} disabled={answers[10] === null || successMsg !== ''} className="mt-4 flex items-center gap-2 bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-white px-4 sm:px-6 py-3 rounded-lg font-semibold w-full justify-center shadow-lg shadow-rose-900/20">
-                סמן חולשה <Bug className="w-4 h-4 ml-1" />
-              </button>
-            </div>
-          )}
-
-          {/* Step 11 */}
-          {step === 11 && (
-            <div className="space-y-4 animate-in fade-in duration-500">
-               <div className="flex items-start gap-3">
-                <span className="bg-fuchsia-900/50 text-fuchsia-400 p-2 rounded-lg shrink-0"><Code className="w-5 h-5"/></span>
-                <div className="flex-1">
-                  <h2 className="text-lg font-bold text-white">משימה 11: תיקון הלוגיקה של החיפוש</h2>
-                  <p className="text-sm text-violet-300 mt-1">
-                    הסרנו את פקודת ה-`else return false` המסוכנת מתוך הלולאה. מה עלינו להחזיר בסוף הפעולה, *אחרי* שהלולאה מסיימת לבדוק את כל הסוכנים ולא מצאה את השם?
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-[#0a0514] rounded-lg p-3 font-mono text-[10px] sm:text-xs md:text-sm text-violet-200 border border-violet-800/50 overflow-x-auto" dir="ltr">
-<pre className="leading-snug">
-<span className="text-fuchsia-400">for</span> (<span className="text-fuchsia-400">int</span> i = <span className="text-orange-400">0</span>; i &lt; <span className="text-fuchsia-400">this</span>.currentIndex; i++) {'{\n'}
-  <span className="text-fuchsia-400">if</span> (<span className="text-fuchsia-400">this</span>.agents[i].GetAlias() == searchName) {'{\n'}
-    <span className="text-fuchsia-400">return true</span>;{'\n'}
-  {'}\n'}
-{'}'}{'\n'}
-<span className="text-fuchsia-400">return</span> <input type="text" value={answers[11]} onChange={(e) => updateAnswer(11, e.target.value)} placeholder="..." className="bg-violet-950 text-fuchsia-300 px-2 py-1 rounded border border-violet-700 focus:border-fuchsia-500 w-[60px] sm:w-[80px] md:w-[120px] mx-1" dir="ltr" spellCheck="false"/>;{'\n'}
-</pre>
-              </div>
-
-              {renderHintAndReveal(
-                "הלולאה סיימה לעבור על כולם וברור לנו שהסוכן לא כאן. איזה ערך בוליאני נחזיר עכשיו?",
-                "false"
-              )}
-
-              {error && <div className="flex gap-2 text-red-400 bg-red-950/50 p-3 rounded-lg text-sm mt-2"><XCircle className="w-5 h-5 shrink-0" /><p>{error}</p></div>}
-              {successMsg && <div className="flex gap-2 text-fuchsia-400 bg-fuchsia-950/30 p-3 rounded-lg text-sm mt-2"><CheckCircle2 className="w-5 h-5 shrink-0" /><p>{successMsg}</p></div>}
-              <button onClick={checkQ11} disabled={answers[11] === null || successMsg !== ''} className="mt-4 flex items-center gap-2 bg-fuchsia-600 hover:bg-fuchsia-500 disabled:opacity-50 text-white px-4 sm:px-6 py-3 rounded-lg font-semibold w-full justify-center shadow-lg shadow-fuchsia-900/20">
-                הזרק קוד פריצה <Play className="w-4 h-4 ml-1" />
-              </button>
-            </div>
-          )}
-
-          {/* Step 12 (NEW) */}
-          {step === 12 && (
-            <div className="space-y-4 animate-in fade-in duration-500">
-               <div className="flex items-start gap-3">
-                <span className="bg-fuchsia-900/50 text-fuchsia-400 p-2 rounded-lg shrink-0"><Code className="w-5 h-5"/></span>
-                <div className="flex-1">
-                  <h2 className="text-lg font-bold text-white">משימה 12: הדפסת נתונים פרטיים מהעצם</h2>
-                  <p className="text-sm text-violet-300 mt-1">
-                    אנו רוצים להדפיס למסך את הכינויים של כל הסוכנים בצוות. כידוע, הכינוי (alias) הוא private. {isF ? 'השלימי' : 'השלם'} את הקריאה הנכונה מתוך מערך העצמים שמביאה את שם הקוד של הסוכן.
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-[#0a0514] rounded-lg p-3 font-mono text-[10px] sm:text-xs md:text-sm text-violet-200 border border-violet-800/50 overflow-x-auto" dir="ltr">
-<pre className="leading-snug">
-<span className="text-fuchsia-400">public void</span> <span className="text-cyan-300">PrintAllAliases</span>() {'{\n'}
-  <span className="text-fuchsia-400">for</span> (<span className="text-fuchsia-400">int</span> i = <span className="text-orange-400">0</span>; i &lt; <span className="text-fuchsia-400">this</span>.currentIndex; i++) {'{\n'}
-    Console.WriteLine(<input type="text" value={answers[12]} onChange={(e) => updateAnswer(12, e.target.value)} placeholder="..." className="bg-violet-950 text-fuchsia-300 px-2 py-1 rounded border border-violet-700 focus:border-fuchsia-500 w-[120px] sm:w-[200px] md:w-[280px] mx-1" dir="ltr" spellCheck="false"/>);{'\n'}
-  {'}\n'}
-{'}'}
-</pre>
-              </div>
-
-              {renderHintAndReveal(
-                "כדי למשוך את הכינוי של סוכן, יש לגשת קודם לתא ה-i במערך, ואז להפעיל את פעולת ה-GetAlias שקיימת במחלקה Agent.",
-                "this.agents[i].GetAlias()"
-              )}
-
-              {error && <div className="flex gap-2 text-red-400 bg-red-950/50 p-3 rounded-lg text-sm mt-2"><XCircle className="w-5 h-5 shrink-0" /><p>{error}</p></div>}
-              {successMsg && <div className="flex gap-2 text-fuchsia-400 bg-fuchsia-950/30 p-3 rounded-lg text-sm mt-2"><CheckCircle2 className="w-5 h-5 shrink-0" /><p>{successMsg}</p></div>}
-              <button onClick={checkQ12} disabled={answers[12].trim() === '' || successMsg !== ''} className="mt-4 flex items-center gap-2 bg-fuchsia-600 hover:bg-fuchsia-500 disabled:opacity-50 text-white px-4 sm:px-6 py-3 rounded-lg font-semibold w-full justify-center shadow-lg shadow-fuchsia-900/20">
-                הזרק קוד פריצה <Play className="w-4 h-4 ml-1" />
-              </button>
-            </div>
-          )}
-
-          {/* Step 13 */}
-          {step === 13 && (
-            <div className="space-y-4 animate-in fade-in duration-500">
-               <div className="flex items-start gap-3">
-                <span className="bg-fuchsia-900/50 text-fuchsia-400 p-2 rounded-lg shrink-0"><Code className="w-5 h-5"/></span>
-                <div className="flex-1">
-                  <h2 className="text-lg font-bold text-white">משימה 13: הפעלת פעולה בתוך תנאי מורכב</h2>
-                  <p className="text-sm text-violet-300 mt-1">
-                    המכשול הסופי: אנו רוצים למנות כמה סוכנים בצוות נמצאים ברמה (Level) גבוהה מ-8. {isF ? 'זכרי שאת לא יכולה' : 'זכור שאתה לא יכול'} לגשת לתכונה של הסוכן ישירות. {isF ? 'השלימי' : 'השלם'} את הקריאה הנכונה מתוך מערך העצמים.
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-[#0a0514] rounded-lg p-3 font-mono text-[10px] sm:text-xs md:text-sm text-violet-200 border border-violet-800/50 overflow-x-auto" dir="ltr">
-<pre className="leading-snug">
-<span className="text-fuchsia-400">int</span> count = <span className="text-orange-400">0</span>;{'\n'}
-<span className="text-fuchsia-400">for</span> (<span className="text-fuchsia-400">int</span> i = <span className="text-orange-400">0</span>; i &lt; <span className="text-fuchsia-400">this</span>.currentIndex; i++) {'{\n'}
-  <span className="text-fuchsia-400">if</span> (<input type="text" value={answers[13]} onChange={(e) => updateAnswer(13, e.target.value)} placeholder="..." className="bg-violet-950 text-fuchsia-300 px-2 py-1 rounded border border-violet-700 focus:border-fuchsia-500 w-[120px] sm:w-[200px] md:w-[280px] mx-1" dir="ltr" spellCheck="false"/> &gt; <span className="text-orange-400">8</span>) {'{\n'}
-    count++;{'\n'}
-  {'}\n'}
-{'}'}{'\n'}
-<span className="text-fuchsia-400">return</span> count;{'\n'}
-</pre>
-              </div>
-
-              {renderHintAndReveal(
-                "שוב עלינו לשלוף נתון באמצעות פעולה. יש לגשת לסוכן בתא ה-i, ואז להפעיל את הפעולה GetLevel() שהכרנו.",
-                "this.agents[i].GetLevel()"
-              )}
-
-              {error && <div className="flex gap-2 text-red-400 bg-red-950/50 p-3 rounded-lg text-sm mt-2"><XCircle className="w-5 h-5 shrink-0" /><p>{error}</p></div>}
-              {successMsg && <div className="flex gap-2 text-fuchsia-400 bg-fuchsia-950/30 p-3 rounded-lg text-sm mt-2"><CheckCircle2 className="w-5 h-5 shrink-0" /><p>{successMsg}</p></div>}
-              <button onClick={checkQ13} disabled={answers[13].trim() === '' || successMsg !== ''} className="mt-4 flex items-center gap-2 bg-fuchsia-600 hover:bg-fuchsia-500 disabled:opacity-50 text-white px-4 sm:px-6 py-3 rounded-lg font-semibold w-full justify-center shadow-lg shadow-fuchsia-900/20">
-                הזרק קוד פריצה אחרון <Play className="w-4 h-4 ml-1" />
-              </button>
-            </div>
-          )}
-
-          {/* Final Step: Screenshot Certificate */}
-          {step === 14 && (
-            <div className="animate-in zoom-in duration-500 bg-[#130b29] p-2 sm:p-4 rounded-xl relative overflow-hidden">
-              <div className="absolute inset-0 border-2 border-fuchsia-500/30 rounded-xl pointer-events-none"></div>
-              <div className="absolute inset-2 border border-dashed border-fuchsia-500/20 rounded-lg pointer-events-none"></div>
-              
-              <div className="absolute top-10 left-10 w-32 h-32 bg-fuchsia-500/20 rounded-full blur-3xl"></div>
-              <div className="absolute bottom-10 right-10 w-32 h-32 bg-violet-500/20 rounded-full blur-3xl"></div>
-
-              <div className="text-center space-y-4 py-6 sm:py-8 px-4 relative z-10">
-                <div className="inline-flex items-center justify-center p-4 sm:p-5 bg-[#0a0514] rounded-full mb-2 border border-fuchsia-400 shadow-[0_0_40px_rgba(217,70,239,0.5)]">
-                  <Award className="w-12 h-12 sm:w-16 sm:h-16 text-fuchsia-400" />
-                </div>
-                
-                <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight uppercase">מבצע "חוליית רפאים" הושלם</h2>
-                <p className="text-xs sm:text-sm text-violet-300">עברת את כל 13 חומות האש ושלטת במערך העצמים המורכב.</p>
-                
-                <div className="bg-[#0a0514]/80 border border-violet-800/50 p-4 sm:p-5 rounded-lg max-w-sm mx-auto space-y-3 mt-6 text-right relative backdrop-blur-sm">
-                  <div className="flex items-center gap-2 text-fuchsia-400 text-sm font-mono pb-2 border-b border-violet-900/50">
-                    <ShieldCheck className="w-4 h-4 shrink-0" />
-                    <span>תיק אימות ביצוע מבצעי - OOP ELITE</span>
+            return (
+              <div className="min-h-screen bg-slate-50 p-6 md:p-12 flex flex-col items-center font-sans" dir="rtl">
+                <div className="max-w-4xl w-full bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+                  
+                  <div className={`p-10 text-center text-white ${isFullCompletion ? 'bg-gradient-to-br from-blue-600 to-indigo-700' : 'bg-gradient-to-br from-amber-500 to-orange-600'}`}>
+                    {isFullCompletion ? (
+                      <Award className="w-24 h-24 mx-auto mb-4 text-blue-100" />
+                    ) : (
+                      <AlertTriangle className="w-24 h-24 mx-auto mb-4 text-amber-100" />
+                    )}
+                    <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                      {isFullCompletion ? 'תעודת הצטיינות' : 'תעודת הגשה חלקית'}
+                    </h1>
+                    <p className="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto">
+                      {isFullCompletion 
+                        ? 'מדהים! פתרת והשלמת את כל דף העבודה בהצלחה, כולל שאלת האתגר. הקוד שלך מוכן להגשה.' 
+                        : 'כל הכבוד על המאמץ! פתרת את שאלות 3, 4 ו-5. כיוון שבחרת לא לעשות את שאלה 6, הניקוד על המטלה יהיה חלקי.'}
+                    </p>
                   </div>
                   
-                  <div className="flex flex-col sm:grid sm:grid-cols-3 gap-2 sm:gap-2 text-sm pt-2 sm:items-center">
-                    <span className="text-violet-400 sm:col-span-1">{isF ? 'סוכנת מבצעת:' : 'סוכן מבצע:'}</span>
-                    <span className="text-white font-bold sm:col-span-2 text-lg">{agentName}</span>
+                  <div className="p-8 md:p-10">
+                    <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                      <h2 className="text-2xl font-bold text-slate-800">הקוד שלך להגשה:</h2>
+                      <button 
+                        onClick={copyToClipboard}
+                        className={`flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold transition-all text-lg w-full md:w-auto shadow-sm
+                          ${copied ? 'bg-green-100 text-green-700 border-green-200' : 'bg-slate-800 text-white hover:bg-slate-700'}`}
+                      >
+                        {copied ? <CheckCircle className="w-6 h-6" /> : <Copy className="w-6 h-6" />}
+                        {copied ? 'הקוד הועתק בהצלחה!' : 'העתק הכל לקלאסרום'}
+                      </button>
+                    </div>
                     
-                    <span className="text-violet-400 sm:col-span-1 mt-2 sm:mt-0 pt-2 sm:pt-0 border-t border-violet-900/50 sm:border-0">מטרה:</span>
-                    <span className="text-white sm:col-span-2">מערך עצמים (Objects Array)</span>
+                    <div className="bg-slate-900 rounded-xl p-6 md:p-8 overflow-auto max-h-[500px] border border-slate-700 shadow-inner" dir="ltr">
+                      <pre className="font-mono text-[15px] leading-relaxed text-slate-300 whitespace-pre-wrap">
+                        <code dangerouslySetInnerHTML={{ __html: highlightCode(allCodeString) }} />
+                      </pre>
+                    </div>
                     
-                    <span className="text-violet-400 sm:col-span-1 mt-2 sm:mt-0 pt-2 sm:pt-0 border-t border-violet-900/50 sm:border-0">שלבים שניצחו:</span>
-                    <span className="text-fuchsia-400 font-bold sm:col-span-2">13 / 13 הצלחות</span>
-
-                    <span className="text-violet-400 sm:col-span-1 mt-2 sm:mt-0 pt-2 sm:pt-0 border-t border-violet-900/50 sm:border-0">חותמת זמן:</span>
-                    <span className="text-fuchsia-300 font-mono text-xs sm:col-span-2" dir="ltr">{timestamp}</span>
-                    
-                    <span className="text-violet-400 sm:col-span-1 mt-2 border-t border-violet-900/50 pt-2">הצפנת מורה:</span>
-                    <span className="text-purple-400 font-mono text-xs sm:col-span-2 sm:mt-2 sm:border-t sm:border-violet-900/50 pt-0 sm:pt-2 text-right sm:text-left break-all" dir="ltr">
-                      GHOST-{Math.random().toString(36).substring(2, 6).toUpperCase()}
-                    </span>
+                    <div className="mt-8 text-center">
+                      <button 
+                        onClick={() => window.location.reload()} 
+                        className="text-slate-500 hover:text-slate-800 underline font-medium"
+                      >
+                        חזור להתחלה (איפוס)
+                      </button>
+                    </div>
                   </div>
-                </div>
 
-                <div className="pt-8 flex flex-col items-center gap-4">
-                  <p className="text-xs sm:text-sm text-violet-300 flex items-center gap-2 bg-[#0a0514] px-4 py-2 rounded-full border border-violet-800/50">
-                    <Camera className="w-4 h-4 text-fuchsia-400 shrink-0" />
-                    צלם מסך זה עכשיו ושלח למורה
+                </div>
+              </div>
+            );
+          }
+
+          if (showIntro) {
+            return (
+              <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6" dir="rtl">
+                <div className="max-w-2xl bg-white rounded-2xl shadow-lg p-10 text-center border border-slate-200">
+                  <BookOpen className="w-16 h-16 text-blue-600 mx-auto mb-6" />
+                  <h1 className="text-3xl font-bold text-slate-900 mb-4">דף עבודה אינטראקטיבי: עצים בינאריים</h1>
+                  <p className="text-lg text-slate-600 mb-8 leading-relaxed">
+                    ברוכים הבאים לסביבת התרגול! כאן נעבור יחד על 4 השאלות המרכזיות מדף העבודה בקלאסרום.
+                    בכל שלב תתבקשו לכתוב קטע קוד אחד בלבד. בסיום התהליך תוכלו להעתיק את כל הפתרונות שלכם במרוכז להגשה.
                   </p>
-                  
                   <button 
-                    onClick={() => {
-                      setStep(0);
-                      setGender(null);
-                      setAnswers({1: '', 2: null, 3: '', 4: null, 5: '', 6: null, 7: '', 8: null, 9: '', 10: null, 11: '', 12: '', 13: ''});
-                    }}
-                    className="text-violet-500 hover:text-fuchsia-400 font-medium transition-colors text-sm mt-4 underline decoration-violet-800 underline-offset-4"
+                    onClick={() => setShowIntro(false)}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold text-lg transition-all flex items-center gap-2 mx-auto shadow-md"
                   >
-                    התנתקו והתחילו אימון סייבר מחדש
+                    התחל לפתור <ArrowRight className="w-5 h-5" />
                   </button>
                 </div>
               </div>
+            );
+          }
+
+          return (
+            <div className="min-h-screen bg-slate-50 text-slate-800 p-4 md:p-8 font-sans" dir="rtl">
+              
+              <div className="max-w-7xl mx-auto flex gap-2 mb-8 overflow-x-auto pb-2">
+                {questionsData.map((q, idx) => (
+                  <button
+                    key={q.id}
+                    onClick={() => loadQuestion(idx)}
+                    className={`whitespace-nowrap px-6 py-3 rounded-xl font-bold transition-all text-sm
+                      ${activeQuestionIdx === idx 
+                        ? 'bg-blue-600 text-white shadow-md' 
+                        : completedCodes[idx] 
+                          ? 'bg-green-100 text-green-800 border border-green-200'
+                          : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'}`}
+                  >
+                    {q.title} {completedCodes[idx] && '✓'}
+                  </button>
+                ))}
+              </div>
+
+              <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8">
+                
+                <div className="w-full lg:w-1/2 flex flex-col gap-6">
+                  
+                  <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 className="text-2xl font-bold text-slate-900 mb-3">{currentQuestion.title}</h2>
+                    <p className="text-slate-700 leading-relaxed text-lg bg-blue-50 p-4 rounded-xl border border-blue-100">
+                      {currentQuestion.description}
+                    </p>
+                  </div>
+
+                  {!isQuestionComplete ? (
+                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex-1 flex flex-col">
+                      
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2">
+                          <PlayCircle className="text-blue-500 w-6 h-6" />
+                          <h3 className="font-bold text-lg text-blue-900">משימה נוכחית:</h3>
+                        </div>
+                        <div className="text-sm font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-full">
+                          {activeStepIdx + 1} / {currentQuestion.steps.length}
+                        </div>
+                      </div>
+                      
+                      <p className="text-lg font-medium mb-6 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        {currentStep.instruction}
+                      </p>
+
+                      <div className="flex-1 min-h-[120px] mb-6 relative">
+                        <textarea
+                          value={userInput}
+                          onChange={(e) => setUserInput(e.target.value)}
+                          placeholder="// הקלד את הקוד כאן..."
+                          className="w-full h-full p-4 rounded-xl bg-slate-900 text-green-400 font-mono text-[16px] resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          dir="ltr"
+                        />
+                      </div>
+
+                      <div className="flex gap-4">
+                        <button
+                          onClick={handleCheck}
+                          disabled={feedback?.type === 'success' || feedback?.type === 'warning-pass'}
+                          className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold transition-all flex justify-center items-center gap-2 disabled:opacity-50"
+                        >
+                          <CheckCircle className="w-5 h-5" /> בדוק תשובה
+                        </button>
+                        
+                        <button
+                          onClick={handleHint}
+                          disabled={feedback?.type === 'success' || feedback?.type === 'warning-pass'}
+                          className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-xl font-bold transition-all flex justify-center items-center gap-2 disabled:opacity-50 border border-slate-200"
+                        >
+                          <HelpCircle className="w-5 h-5 text-amber-500" />
+                          {hintLevel < currentStep.hints.length ? "רמז קל" : "תן תבנית להשלמה"}
+                        </button>
+                      </div>
+
+                      {hintLevel > 0 && hintLevel <= currentStep.hints.length && (
+                        <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-xl animate-in fade-in">
+                          <strong className="text-amber-800 flex items-center gap-2 mb-2">
+                            <Lightbulb className="w-5 h-5" /> רמזים:
+                          </strong>
+                          <ul className="list-disc list-inside text-amber-900 space-y-1">
+                            {currentStep.hints.slice(0, hintLevel).map((hint, i) => (
+                              <li key={i}>{hint}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {feedback && (
+                        <div className={`mt-4 p-4 rounded-xl flex items-start gap-3 animate-in fade-in
+                          ${feedback.type === 'success' ? 'bg-green-100 text-green-800' : 
+                            feedback.type === 'warning-pass' ? 'bg-amber-100 border border-amber-300 text-amber-900' : 
+                            feedback.type === 'info' ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800'}`}>
+                          
+                          {feedback.type === 'success' ? <CheckCircle className="w-6 h-6 shrink-0 mt-0.5" /> : 
+                           feedback.type === 'warning-pass' ? <AlertTriangle className="w-6 h-6 shrink-0 text-amber-600 mt-0.5" /> :
+                           feedback.type === 'info' ? <HelpCircle className="w-6 h-6 shrink-0 mt-0.5" /> : 
+                           <XCircle className="w-6 h-6 shrink-0 mt-0.5" />}
+                          
+                          <div>
+                            <p className="font-bold">{feedback.message}</p>
+                            {feedback.details && (
+                              <ul className="list-disc list-inside mt-2 text-sm opacity-90 space-y-1">
+                                {feedback.details.map((detail, i) => <li key={i}>{detail}</li>)}
+                              </ul>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                    </div>
+                  ) : (
+                    <div className="bg-green-50 p-8 rounded-2xl shadow-sm border border-green-200 flex flex-col items-center text-center">
+                      <CheckCircle className="w-20 h-20 text-green-500 mb-4" />
+                      <h2 className="text-2xl font-bold text-green-800 mb-2">כל הכבוד! סיימת את השאלה.</h2>
+                      <p className="text-green-700 mb-8">
+                        הקוד המלא והנכון שבנית מופיע בחלונית העורך משמאל ונשמר לקראת ההגשה.
+                      </p>
+                      
+                      {activeQuestionIdx < questionsData.length - 1 ? (
+                        activeQuestionIdx === 2 ? ( 
+                          <div className="flex flex-col gap-3 w-full max-w-sm">
+                            <button 
+                              onClick={() => loadQuestion(activeQuestionIdx + 1)}
+                              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all w-full shadow-md"
+                            >
+                              המשך לשאלה 6 (מומלץ!) <ChevronLeft className="w-5 h-5" />
+                            </button>
+                            <button 
+                              onClick={() => setShowCertificate(true)}
+                              className="bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-300 px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all w-full"
+                            >
+                              סיום עכשיו (ניקוד חלקי) <Award className="w-5 h-5" />
+                            </button>
+                          </div>
+                        ) : (
+                          <button 
+                            onClick={() => loadQuestion(activeQuestionIdx + 1)}
+                            className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 transition-all"
+                          >
+                            לשאלה הבאה <ChevronLeft className="w-5 h-5" />
+                          </button>
+                        )
+                      ) : (
+                        <div className="flex flex-col items-center gap-6">
+                          <div className="text-xl font-bold text-blue-600 bg-blue-100 p-4 rounded-xl">
+                            מדהים! סיימת את כל דף העבודה! 🎉
+                          </div>
+                          <button 
+                            onClick={() => setShowCertificate(true)}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center gap-2 transition-all shadow-lg hover:shadow-xl"
+                          >
+                            קבל תעודת הצטיינות והגש <Award className="w-6 h-6" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <div className="w-full lg:w-1/2 flex flex-col min-h-[500px]">
+                  <div className="bg-slate-900 rounded-2xl shadow-xl overflow-hidden flex flex-col h-full border border-slate-700">
+                    <div className="bg-slate-800 px-4 py-3 flex items-center justify-between border-b border-slate-700">
+                      <div className="flex gap-1.5">
+                        <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                      </div>
+                      <div className="text-slate-400 text-xs font-mono flex items-center gap-2">
+                        <Code className="w-4 h-4" /> Solution.cs
+                      </div>
+                    </div>
+                    
+                    <div className="p-6 overflow-auto text-left flex-1" dir="ltr">
+                      <pre className="font-mono text-[15px] leading-relaxed text-slate-300 whitespace-pre-wrap">
+                        <code dangerouslySetInnerHTML={{ __html: highlightCode(accumulatedCode || "// הקוד שלך ייבנה כאן בהדרגה...") }} />
+                        
+                        {!isQuestionComplete && accumulatedCode && (
+                          <span className="inline-block w-2 h-4 ml-1 bg-amber-400 animate-pulse align-middle"></span>
+                        )}
+                      </pre>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
             </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
+          );
+        }
 
-// ============================================================================
-// MAIN APP COMPONENT (מנהל המצבים)
-// ============================================================================
-const App = () => {
-  // states: 'presentation' | 'connecting' | 'simulation'
-  const [appMode, setAppMode] = useState('presentation');
-
-  return (
-    <div dir="rtl" className="min-h-screen bg-[#0a0514] font-sans selection:bg-fuchsia-900/50 text-violet-100">
-      {appMode === 'presentation' && <Presentation onComplete={() => setAppMode('connecting')} />}
-      {appMode === 'connecting' && <ConnectingTerminal onComplete={() => setAppMode('simulation')} />}
-      {appMode === 'simulation' && <Simulation />}
-    </div>
-  );
-};
-
-export default App;
+        // --- אתחול והרצת האפליקציה בתוך ה-HTML ---
+        const rootElement = document.getElementById('root');
+        const root = ReactDOM.createRoot(rootElement);
+        root.render(<WorksheetApp />);
+    </script>
+</body>
+</html>
