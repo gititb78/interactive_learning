@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מבצע "חוליית רפאים"</title>
+    
+    <!-- טעינת ספריות React ו-Babel -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- טעינת מסגרת העיצוב Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        /* יבוא פונט עברי נקי */
+        @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap');
+        
+        body { 
+            font-family: 'Assistant', sans-serif; 
+            background-color: #05020a; 
+            color: white; 
+            margin: 0;
+            padding: 0;
+        }
+
+        /* הגדרת האנימציות (גיבוי לתוסף האנימציות של טיילווינד) */
+        .animate-in { animation-duration: 500ms; animation-fill-mode: both; animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+        .fade-in { animation-name: fadeIn; }
+        .zoom-in { animation-name: zoomIn; }
+        .slide-in-from-right-8 { animation-name: slideInRight; }
+        .slide-in-from-bottom-2 { animation-name: slideInBottom; }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(2rem); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideInBottom { from { opacity: 0; transform: translateY(0.5rem); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* עיצוב פס הגלילה */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0514; }
+        ::-webkit-scrollbar-thumb { background: #4c1d95; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6d28d9; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // ============================================================================
+        // ICONS IMPLEMENTATION (תחליף לאייקונים של Lucide למערכת עצמאית)
+        // ============================================================================
+        const IconBase = ({ children, className = "", ...props }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
+                {children}
+            </svg>
+        );
+
+        const ChevronLeft = (p) => <IconBase {...p}><polyline points="15 18 9 12 15 6" /></IconBase>;
+        const ChevronRight = (p) => <IconBase {...p}><polyline points="9 18 15 12 9 6" /></IconBase>;
+        const Code = (p) => <IconBase {...p}><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></IconBase>;
+        const Play = (p) => <IconBase {...p}><polygon points="5 3 19 12 5 21 5 3" /></IconBase>;
+        const CheckCircle2 = (p) => <IconBase {...p}><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></IconBase>;
+        const XCircle = (p) => <IconBase {...p}><circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" /></IconBase>;
+        const Terminal = (p) => <IconBase {...p}><polyline points="4 17 10 11 4 5" /><line x1="12" y1="19" x2="20" y2="19" /></IconBase>;
+        const ShieldCheck = (p) => <IconBase {...p}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="m9 12 2 2 4-4" /></IconBase>;
+        const Bug = (p) => <IconBase {...p}><rect width="8" height="14" x="8" y="6" rx="4" /><path d="m19 7-3 2" /><path d="m5 7 3 2" /><path d="m19 19-3-2" /><path d="m5 19 3-2" /><path d="M20 13h-4" /><path d="M4 13h4" /><path d="m10 4 1 2" /><path d="m14 4-1 2" /></IconBase>;
+        const Camera = (p) => <IconBase {...p}><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" /><circle cx="12" cy="13" r="3" /></IconBase>;
+        const Award = (p) => <IconBase {...p}><circle cx="12" cy="8" r="7" /><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" /></IconBase>;
+        const FileLock2 = (p) => <IconBase {...p}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /><rect x="8" y="14" width="8" height="5" rx="1" /><path d="M10 14v-2a2 2 0 1 1 4 0v2" /></IconBase>;
+        const RadioReceiver = (p) => <IconBase {...p}><path d="M5 16v2" /><path d="M19 16v2" /><rect width="20" height="8" x="2" y="8" rx="2" /><path d="M18 12h.01" /></IconBase>;
+        const Info = (p) => <IconBase {...p}><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></IconBase>;
+        const Ghost = (p) => <IconBase {...p}><path d="M9 10h.01" /><path d="M15 10h.01" /><path d="M12 2a8 8 0 0 0-8 8v12l3-3 2.5 2.5L12 19l2.5 2.5L17 19l3 3V10a8 8 0 0 0-8-8z" /></IconBase>;
+        const Badge = (p) => <IconBase {...p}><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></IconBase>;
+        const TrendingUp = (p) => <IconBase {...p}><polyline points="22 7 13.5 15.5 8.5 10.5 2 17" /><polyline points="16 7 22 7 22 13" /></IconBase>;
+        const Shield = (p) => <IconBase {...p}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" /></IconBase>;
+        const HelpCircle = (p) => <IconBase {...p}><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" /></IconBase>;
+        const Unlock = (p) => <IconBase {...p}><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 9.9-1" /></IconBase>;
+        const ShieldAlert = (p) => <IconBase {...p}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></IconBase>;
+
+        // ============================================================================
+        // COMPONENT 1: PRESENTATION (מצגת למידה)
+        // ============================================================================
+        const Presentation = ({ onComplete }) => {
+          const [currentSlide, setCurrentSlide] = useState(0);
+          const totalSlides = 7;
+
+          const nextSlide = () => { if (currentSlide < totalSlides - 1) setCurrentSlide(prev => prev + 1); };
+          const prevSlide = () => { if (currentSlide > 0) setCurrentSlide(prev => prev - 1); };
+
+          useEffect(() => {
+            const handleKeyDown = (e) => {
+              if (e.key === 'ArrowLeft') nextSlide();
+              if (e.key === 'ArrowRight') prevSlide();
+            };
+            window.addEventListener('keydown', handleKeyDown);
+            return () => window.removeEventListener('keydown', handleKeyDown);
+          }, [currentSlide]);
+
+          return (
+            <div className="flex flex-col h-screen w-full bg-[#05020a] p-2 sm:p-6 overflow-hidden relative">
+              {/* Background decorations */}
+              <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20 bg-[radial-gradient(circle_at_10%_10%,_#d946ef_0%,_transparent_40%),radial-gradient(circle_at_90%_90%,_#22d3ee_0%,_transparent_40%)]"></div>
+              
+              {/* Main Slide Area */}
+              <div className="flex-grow flex items-center justify-center relative w-full max-w-6xl mx-auto z-10">
+                <div className="bg-[#0f0822] border border-violet-800/50 shadow-[0_0_40px_rgba(217,70,239,0.15)] rounded-2xl w-full h-auto max-h-[85vh] min-h-[60vh] p-4 sm:p-12 flex flex-col justify-center overflow-y-auto overflow-x-hidden transition-all duration-500">
+                  
+                  {/* SLIDE 0: Title */}
+                  {currentSlide === 0 && (
+                    <div className="text-center animate-in fade-in zoom-in duration-500">
+                      <h1 className="text-4xl sm:text-7xl font-extrabold text-fuchsia-400 drop-shadow-[0_0_15px_rgba(217,70,239,0.4)] mb-4 leading-tight">
+                        הכרת סוכן הסייבר <br/>
+                        <span className="text-cyan-400 font-mono tracking-widest">[Agent]</span>
+                      </h1>
+                      <p className="text-lg sm:text-2xl text-violet-300 mt-6">תדריך מקדים: הבנת אבן הבסיס לפני פריצה לתוך מערך של עצמים.</p>
+                    </div>
+                  )}
+
+                  {/* SLIDE 1: What is an Agent? */}
+                  {currentSlide === 1 && (
+                    <div className="w-full animate-in fade-in slide-in-from-right-8 duration-500">
+                      <h2 className="text-2xl sm:text-4xl font-bold text-fuchsia-400 border-b-2 border-fuchsia-900/50 pb-4 mb-6 sm:mb-8">מהו בעצם סוכן (Agent)?</h2>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-center">
+                        <div className="space-y-4 text-base sm:text-xl text-violet-200 leading-relaxed">
+                          <p>לפני שאנחנו מנהלים חוליה שלמה (מערך סוכנים), אנחנו חייבים להבין את יחידת הבסיס. המחלקה <code>Agent</code> מייצגת סוכן בודד.</p>
+                          <p>לכל סוכן יש שתי תכונות עיקריות (Properties) השמורות בזיכרון:</p>
+                          <ul className="space-y-3 pr-6 mt-4 list-disc marker:text-cyan-400">
+                            <li><code className="text-fuchsia-300">alias</code> - שם קוד / כינוי (<span className="text-cyan-400">string</span>)</li>
+                            <li><code className="text-fuchsia-300">level</code> - רמת סיווג / מיומנות (<span className="text-cyan-400">int</span>)</li>
+                          </ul>
+                          <p className="mt-4 text-violet-300 text-sm sm:text-base border-r-4 border-fuchsia-500 pr-4">תכונות אלו מוגדרות כ- <code>private</code> (פרטיות) כדי למנוע מגורמים עוינים לשנות אותן ישירות (עקרון הכימוס).</p>
+                        </div>
+                        <div className="bg-[#05020a] border border-violet-600/30 rounded-xl h-48 sm:h-64 flex flex-col items-center justify-center shadow-[0_0_20px_rgba(139,92,246,0.2)]">
+                          <Ghost className="w-24 h-24 sm:w-32 sm:h-32 text-cyan-400 drop-shadow-[0_0_15px_rgba(34,211,238,0.4)] mb-4" />
+                          <span className="text-violet-400 font-mono text-sm sm:text-base"></span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* SLIDE 2: Constructor */}
+                  {currentSlide === 2 && (
+                    <div className="w-full animate-in fade-in slide-in-from-right-8 duration-500">
+                      <h2 className="text-2xl sm:text-4xl font-bold text-fuchsia-400 border-b-2 border-fuchsia-900/50 pb-4 mb-6 sm:mb-8">הפעולה הבונה (Constructor)</h2>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-stretch">
+                        <div className="bg-[#1a0f35]/80 border border-violet-500/30 p-5 sm:p-6 rounded-xl space-y-4 flex flex-col justify-center">
+                          <h3 className="text-xl sm:text-2xl font-bold text-fuchsia-300">יצירת החיים בזיכרון</h3>
+                          <p className="text-base sm:text-lg text-violet-200">הפעולה הבונה היא התחנה הראשונה. היא מאפשרת לנו לאתחל סוכן חדש בזיכרון, תוך הענקת שם ורמה המגיעים כפרמטרים מבחוץ.</p>
+                          <p className="text-base sm:text-lg text-violet-200">כדי ליצור מופע (Instance) חדש, אנו <strong className="text-white">חייבים</strong> להשתמש במילה השמורה <code className="text-cyan-400">new</code>.</p>
+                        </div>
+                        <div className="bg-[#05020a] border border-violet-600/50 rounded-xl p-5 sm:p-6 overflow-x-auto" dir="ltr">
+                          <h3 className="text-lg sm:text-xl font-bold text-violet-400 mb-4 border-b border-violet-800/50 pb-2">C# Code</h3>
+                          <pre className="text-xs sm:text-sm text-fuchsia-200 font-mono leading-relaxed">
+<span className="text-fuchsia-400">public class</span> <span className="text-cyan-300">Agent</span> {'{\n'}
+  <span className="text-fuchsia-400">private string</span> alias;{'\n'}
+  <span className="text-fuchsia-400">private int</span> level;{'\n\n'}
+  <span className="text-fuchsia-400">public</span> <span className="text-cyan-300">Agent</span>(<span className="text-fuchsia-400">string</span> alias, <span className="text-fuchsia-400">int</span> level) {'{\n'}
+    <span className="text-fuchsia-400">this</span>.alias = alias;{'\n'}
+    <span className="text-fuchsia-400">this</span>.level = level;{'\n'}
+  {'}\n'}
+{'}'}
+                          </pre>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* SLIDE 3: Copy Constructor */}
+                  {currentSlide === 3 && (
+                    <div className="w-full animate-in fade-in slide-in-from-right-8 duration-500">
+                      <h2 className="text-2xl sm:text-4xl font-bold text-fuchsia-400 border-b-2 border-fuchsia-900/50 pb-4 mb-6 sm:mb-8">הפעולה הבונה המעתיקה</h2>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-stretch">
+                        <div className="bg-[#1a0f35]/80 border border-violet-500/30 p-5 sm:p-6 rounded-xl space-y-4 flex flex-col justify-center">
+                          <h3 className="text-xl sm:text-2xl font-bold text-fuchsia-300">שכפול זהויות (Deep Copy)</h3>
+                          <p className="text-base sm:text-lg text-violet-200">נרצה לקחת סוכן קיים וליצור סוכן <strong className="text-white">חדש לחלוטין</strong> עם אותן תכונות, מבלי שהם יחלקו את אותו מקום בזיכרון.</p>
+                          <p className="text-base sm:text-lg text-violet-200">זהו מנגנון הגנה קריטי שמונע שיתוף מצביעים זדוני (Aliasing). במקום String, הפעולה מקבלת כפרמטר סוכן קיים (<code>other</code>).</p>
+                        </div>
+                        <div className="bg-[#05020a] border border-violet-600/50 rounded-xl p-5 sm:p-6 overflow-x-auto" dir="ltr">
+                          <h3 className="text-lg sm:text-xl font-bold text-violet-400 mb-4 border-b border-violet-800/50 pb-2">C# Code</h3>
+                          <pre className="text-xs sm:text-sm text-fuchsia-200 font-mono leading-relaxed">
+<span className="text-fuchsia-400">public</span> <span className="text-cyan-300">Agent</span>(<span className="text-cyan-300">Agent</span> other) {'{\n'}
+  <span className="text-fuchsia-400">this</span>.alias = other.alias;{'\n'}
+  <span className="text-fuchsia-400">this</span>.level = other.level;{'\n'}
+{'}\n\n'}
+<span className="text-violet-500">// Example Usage:</span>{'\n'}
+<span className="text-cyan-300">Agent</span> clone = <span className="text-fuchsia-400">new</span> <span className="text-cyan-300">Agent</span>(bestAgent);
+                          </pre>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* SLIDE 4: Getters / Setters */}
+                  {currentSlide === 4 && (
+                    <div className="w-full animate-in fade-in slide-in-from-right-8 duration-500">
+                      <h2 className="text-2xl sm:text-4xl font-bold text-fuchsia-400 border-b-2 border-fuchsia-900/50 pb-4 mb-6 sm:mb-8">פעולות גישה לעצם</h2>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+                        <div className="bg-[#1a0f35]/80 border border-violet-500/30 p-4 sm:p-6 rounded-xl flex flex-col items-center text-center">
+                          <Badge className="w-12 h-12 sm:w-16 sm:h-16 text-cyan-400 mb-4" />
+                          <h3 className="text-xl sm:text-2xl font-bold text-fuchsia-300 mb-2 font-mono">GetAlias()</h3>
+                          <p className="text-sm sm:text-base text-violet-200">מחזירה את שם הקוד של הסוכן. פעולה קריטית לחיפוש סוכן ספציפי בתוך המערך.</p>
+                        </div>
+                        <div className="bg-[#1a0f35]/80 border border-violet-500/30 p-4 sm:p-6 rounded-xl flex flex-col items-center text-center">
+                          <TrendingUp className="w-12 h-12 sm:w-16 sm:h-16 text-cyan-400 mb-4" />
+                          <h3 className="text-xl sm:text-2xl font-bold text-fuchsia-300 mb-2 font-mono">GetLevel()</h3>
+                          <p className="text-sm sm:text-base text-violet-200">מחזירה את רמת הסוכן. בעזרתה נחשב ממוצע מיומנויות או נחפש את הסוכן החזק ביותר.</p>
+                        </div>
+                        <div className="bg-[#1a0f35]/80 border border-violet-500/30 p-4 sm:p-6 rounded-xl flex flex-col items-center text-center">
+                          <Shield className="w-12 h-12 sm:w-16 sm:h-16 text-cyan-400 mb-4" />
+                          <h3 className="text-xl sm:text-2xl font-bold text-fuchsia-300 mb-2 font-mono">SetLevel(n)</h3>
+                          <p className="text-sm sm:text-base text-violet-200">מעדכנת את רמת הסוכן רק דרך צינור מאובטח ומוגדר, ולא בגישה ישירה לתכונה.</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* SLIDE 5: Test Yourself */}
+                  {currentSlide === 5 && (
+                    <div className="w-full animate-in fade-in slide-in-from-right-8 duration-500">
+                      <h2 className="text-2xl sm:text-4xl font-bold text-fuchsia-400 border-b-2 border-fuchsia-900/50 pb-4 mb-6 sm:mb-8">בחן את עצמך: חוק ברזל</h2>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                        <div className="bg-[#1a0f35]/80 border border-violet-500/30 p-5 sm:p-6 rounded-xl space-y-4">
+                          <div className="flex items-center gap-3 text-cyan-400 mb-2">
+                            <HelpCircle className="w-6 h-6 sm:w-8 sm:h-8" />
+                            <h3 className="text-xl sm:text-2xl font-bold m-0">שאלת אבטחה קריטית</h3>
+                          </div>
+                          <p className="text-base sm:text-lg text-violet-200">האם מחלקת <code>Agent</code> היא מטיפוס ערך (Value Type) כמו <code>int</code>, או מטיפוס הפניה (Reference Type)?</p>
+                          <p className="text-base sm:text-lg text-fuchsia-300 font-bold mt-4">ולמה זה קריטי כשאנחנו בונים מערך שלם של סוכנים?</p>
+                        </div>
+                        <div className="bg-[#05020a] border border-green-500/30 p-5 sm:p-6 rounded-xl space-y-4">
+                          <div className="flex items-center gap-3 text-green-400 mb-2">
+                            <Unlock className="w-6 h-6 sm:w-8 sm:h-8" />
+                            <h3 className="text-xl sm:text-2xl font-bold m-0">תשובת המערכת</h3>
+                          </div>
+                          <p className="text-base sm:text-lg text-violet-200">עצם (Object) הוא תמיד <strong className="text-white">טיפוס הפניה (Reference Type)!</strong> מזה נגזרים 2 חוקים מוחלטים:</p>
+                          <ul className="space-y-3 pr-6 mt-4 list-disc marker:text-green-400 text-sm sm:text-base text-violet-300">
+                            <li>תא ריק במערך הסוכנים אינו מכיל 0 אלא <code className="text-fuchsia-400">null</code>. פנייה לתא כזה תרסק את התוכנית!</li>
+                            <li>אם נחזיר סוכן מתוך פעולה, חובה להחזיר עותק שלו (<code className="text-cyan-400">new Agent(a)</code>) כדי למנוע שינוי זדוני של המקור.</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* SLIDE 6: Go to Simulation */}
+                  {currentSlide === 6 && (
+                    <div className="w-full text-center space-y-6 sm:space-y-8 animate-in fade-in zoom-in duration-500">
+                      <h2 className="text-4xl sm:text-6xl font-bold text-cyan-400 drop-shadow-[0_0_15px_rgba(34,211,238,0.4)]">מוכנים למבצע?</h2>
+                      <p className="text-lg sm:text-2xl text-violet-200">כעת, כשהבנו מיהו הסוכן הבודד ואיך שולטים בו, אנו מוכנים לנהל חוליית רפאים שלמה.</p>
+                      <div className="pt-6 sm:pt-8">
+                        <button 
+                          onClick={onComplete}
+                          className="bg-cyan-500 hover:bg-cyan-400 text-[#05020a] text-xl sm:text-2xl font-bold py-3 sm:py-4 px-6 sm:px-10 rounded-xl transition-all hover:scale-105 shadow-[0_0_20px_rgba(34,211,238,0.5)] flex items-center justify-center gap-3 mx-auto"
+                        >
+                          <Terminal className="w-6 h-6 sm:w-8 sm:h-8" />
+                          התחבר לסימולציה כעת
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Navigation Bar */}
+              <div className="h-16 sm:h-20 flex items-center justify-center gap-3 sm:gap-8 z-20 mt-2 sm:mt-0">
+                <button 
+                  onClick={nextSlide} 
+                  disabled={currentSlide === totalSlides - 1}
+                  className="flex items-center gap-1 sm:gap-2 bg-fuchsia-700 hover:bg-fuchsia-600 disabled:bg-violet-900 disabled:opacity-50 disabled:cursor-not-allowed text-white px-3 sm:px-6 py-2 sm:py-2.5 rounded-lg font-bold transition-all text-sm sm:text-base"
+                >
+                  הבא <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                </button>
+                <span className="text-fuchsia-300 font-mono text-base sm:text-xl font-bold bg-[#1a0f35] border border-violet-700/50 px-4 sm:px-6 py-1 sm:py-1.5 rounded-full">
+                  {currentSlide + 1} / {totalSlides}
+                </span>
+                <button 
+                  onClick={prevSlide} 
+                  disabled={currentSlide === 0}
+                  className="flex items-center gap-1 sm:gap-2 bg-fuchsia-700 hover:bg-fuchsia-600 disabled:bg-violet-900 disabled:opacity-50 disabled:cursor-not-allowed text-white px-3 sm:px-6 py-2 sm:py-2.5 rounded-lg font-bold transition-all text-sm sm:text-base"
+                >
+                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" /> הקודם
+                </button>
+              </div>
+            </div>
+          );
+        };
+
+        // ============================================================================
+        // COMPONENT 2: CONNECTING TERMINAL (מסך מעבר)
+        // ============================================================================
+        const ConnectingTerminal = ({ onComplete }) => {
+          const [lines, setLines] = useState(0);
+
+          useEffect(() => {
+            const timer1 = setTimeout(() => setLines(1), 500);
+            const timer2 = setTimeout(() => setLines(2), 1500);
+            const timer3 = setTimeout(() => setLines(3), 2500);
+            const timer4 = setTimeout(() => setLines(4), 3500);
+            const timer5 = setTimeout(() => onComplete(), 5000); // Transition to game
+            return () => { clearTimeout(timer1); clearTimeout(timer2); clearTimeout(timer3); clearTimeout(timer4); clearTimeout(timer5); };
+          }, [onComplete]);
+
+          return (
+            <div className="flex flex-col h-screen w-full bg-[#05020a] items-center justify-center p-4 sm:p-6">
+              <div className="w-full max-w-3xl bg-[#0a0514] border-2 border-cyan-500/50 rounded-xl p-4 sm:p-8 shadow-[inset_0_0_40px_rgba(34,211,238,0.1)] text-cyan-400 font-mono text-sm sm:text-2xl" dir="ltr">
+                {lines >= 1 && <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 mb-2 sm:mb-4">&gt; Establishing secure connection to CyberSquad Mainframe...</div>}
+                {lines >= 2 && <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 mb-2 sm:mb-4">&gt; Bypassing proxy protocols... <span className="text-green-400">[OK]</span></div>}
+                {lines >= 3 && <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 mb-2 sm:mb-4">&gt; Loading Agent Object Arrays... <span className="text-green-400">[OK]</span></div>}
+                {lines >= 4 && <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 mb-6 sm:mb-8">&gt; Access Granted. Launching Simulation Interface.</div>}
+                
+                {lines >= 4 && (
+                  <div className="text-center mt-8 sm:mt-12 animate-in fade-in zoom-in duration-500" dir="rtl">
+                    <ShieldCheck className="w-12 h-12 sm:w-16 sm:h-16 text-green-400 mx-auto mb-4 animate-pulse" />
+                    <h2 className="text-xl sm:text-3xl font-bold text-white font-sans">חיבור הושלם. מפעיל מערכת...</h2>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        };
+
+        // ============================================================================
+        // COMPONENT 3: SIMULATION GAME (המשחק המרכזי)
+        // ============================================================================
+        const Simulation = () => {
+          const [step, setStep] = useState(0);
+          const [agentName, setAgentName] = useState('');
+          const [gender, setGender] = useState(null);
+          const [answers, setAnswers] = useState({
+            1: '', 2: null, 3: '', 4: null, 5: '', 6: null, 7: '', 8: null, 9: '', 10: null, 11: '', 12: '', 13: ''
+          });
+          
+          const [error, setError] = useState('');
+          const [successMsg, setSuccessMsg] = useState('');
+          const [timestamp, setTimestamp] = useState('');
+          
+          // מנגנון הרמזים החדש
+          const [showHint, setShowHint] = useState(false);
+          const [showReveal, setShowReveal] = useState(false);
+
+          const isF = gender === 'F';
+
+          const nextStep = () => {
+            setError('');
+            setSuccessMsg('');
+            setShowHint(false);
+            setShowReveal(false);
+            setStep(step + 1);
+          };
+
+          const updateAnswer = (qNum, val) => {
+            setAnswers(prev => ({ ...prev, [qNum]: val }));
+          };
+
+          // --- Handlers for Code Completion Stages ---
+          const handleCodeSubmit = (qNum, validationFn, successText, errorTextFn) => {
+            let rawAns = answers[qNum] || '';
+            let cleanAns = rawAns.replace(/\s+/g, '').toLowerCase();
+            
+            // מנגנון סלחני לנקודה-פסיק מיותרת
+            let syntaxWarning = '';
+            if (cleanAns.includes(';;')) {
+              syntaxWarning = ' (הערה: שמת יותר מדי נקודה-פסיק, תיקנו עבורך)';
+            }
+            // ניקוי כל נקודה-פסיק בסוף התשובה כדי שהבדיקה תעבור חלקה
+            cleanAns = cleanAns.replace(/;+$/, '');
+
+            const result = validationFn(cleanAns);
+            
+            if (result.isCorrect) {
+              setSuccessMsg(successText + syntaxWarning);
+              if (qNum === 13) setTimestamp(new Date().toLocaleString('he-IL'));
+              setTimeout(nextStep, 2500);
+            } else {
+              setError(errorTextFn ? errorTextFn(cleanAns) : 'קוד שגוי. תוכלו להיעזר ברמז או בלחצן "גלה לי".');
+            }
+          };
+
+          // --- Handlers for Bug Hunting Stages ---
+          const handleBugSubmit = (qNum, correctLine, successText, errorOptions) => {
+            const ans = answers[qNum];
+            if (ans === correctLine) {
+              setSuccessMsg(successText);
+              if (qNum === 13) setTimestamp(new Date().toLocaleString('he-IL'));
+              setTimeout(nextStep, 3500);
+            } else if (ans === null) {
+              setError('נא לבחור שורת קוד לפני הרצת הבדיקה.');
+            } else {
+              setError(errorOptions[ans] || 'שורה זו תקינה לחלוטין. חפש את השגיאה הלוגית במקום אחר.');
+            }
+          };
+
+          // --- Validations ---
+          const checkQ1 = () => handleCodeSubmit(1, 
+            (a) => ({ isCorrect: a === 'newagent[maxsize]' || a === 'newagent[maxcapacity]' }),
+            'אתחול מערך עצמים עבר בהצלחה. כרגע כל התאים מכילים Null.',
+            (a) => 'נסו שוב. (ניתן להיעזר ברמז למטה)'
+          );
+
+          const checkQ2 = () => handleBugSubmit(2, 2,
+            'איתור מזהיר! החזרת True לפני שקידמת את המונה (currentIndex). הסוכן הבא פשוט ידרוס את הסוכן הנוכחי!',
+            { 0: 'הבדיקה שאין חריגה מגבולות המערך הכרחית ותקינה.', 1: 'יצירת עותק חדש (new Agent) והכנסתו למערך במיקום הנוכחי היא פעולה נכונה כדי למנוע Aliasing.' }
+          );
+
+          const checkQ3 = () => handleCodeSubmit(3,
+            (a) => ({ isCorrect: a === 'currentindex++' || a === 'this.currentindex++' || a === 'currentindex=currentindex+1' }),
+            'הלוגיקה תוקנה! מונה הסוכנים מקודם כעת לאחר כל הוספה, כפי שנדרש בשיטת המונה.',
+            () => 'נסו שוב. (ניתן להיעזר ברמז למטה)'
+          );
+
+          const checkQ4 = () => handleBugSubmit(4, 1,
+            'שגיאת קריסה (NullReferenceException) אותרה! מערך העצמים שלנו מלא ב-Null בתאים הריקים שלו. אי אפשר לסרוק את כל המערך עד הסוף (Length), אחרת ננסה להפעיל GetLevel על שום-דבר!',
+            { 0: 'הגדרת הסכום ואתחולו ל-0 תקינה לחלוטין.', 2: 'הגישה לרמת הסוכן (GetLevel) והוספתה לסכום מבוצעת נכון בהנחה שהסוכן קיים.', 3: 'חישוב הממוצע תוך ביצוע המרה ל-double תקין והכרחי.' }
+          );
+
+          const checkQ5 = () => handleCodeSubmit(5,
+            (a) => ({ isCorrect: a === 'currentindex' || a === 'this.currentindex' }),
+            'הצלת את המערכת מקריסה! אנחנו סורקים אך ורק עצמים שקיימים בפועל לפי המונה שלנו.',
+            () => 'נסו שוב. (ניתן להיעזר ברמז למטה)'
+          );
+
+          const checkQ6 = () => handleBugSubmit(6, 3,
+            'סכנת Aliasing נבלמה! הפעולה מחזירה מצביע ישיר לעצם מתוך המערך. גורם חיצוני יוכל לשנות את פרטי הסוכן הסודי שלנו מחוץ למחלקה!',
+            { 0: 'שמירת מצביע התחלתי לסוכן הראשון היא דרך תקנית למציאת מקסימום.', 1: 'הלולאה סורקת נכון מהסוכן השני (אינדקס 1) ועד לכמות הסוכנים בפועל (currentIndex).', 2: 'השוואת הרמות ועדכון סוכן המקסימום תקינים.' }
+          );
+
+          const checkQ7 = () => handleCodeSubmit(7,
+            (a) => ({ isCorrect: a === 'newagent(best)' || a === 'newagent(best.getalias(),best.getlevel())' }),
+            'חומת האבטחה הושלמה. החזרת עותק מנותק (Deep Copy) מגינה על הנתונים המקוריים של הצוות.',
+            () => 'נסו שוב. (ניתן להיעזר ברמז למטה)'
+          );
+
+          const checkQ8 = () => handleBugSubmit(8, 0,
+            'באג חריגה מצא! כאשר המערך מלא (כלומר currentIndex שווה ל-Length), הלולאה תרוץ עד האיבר האחרון. כשתגיע אליו, הפנייה ל-j+1 תחרוג מגבולות המערך ותזרוק IndexOutOfRangeException.',
+            { 1: 'העתקת האיבר הבא (j+1) לתוך המיקום הנוכחי (j) היא הדרך הנכונה לדחוס איברים שמאלה.', 2: 'סגירת הבלוק תקינה.', 3: 'הקטנת המונה (currentIndex--) הכרחית בסוף המחיקה כדי לסמן שיש לנו סוכן אחד פחות.' }
+          );
+
+          const checkQ9 = () => handleCodeSubmit(9,
+            (a) => ({ isCorrect: a === 'this.currentindex-1' || a === 'currentindex-1' }),
+            'תיקון מושלם! עצרנו צעד אחד קודם כדי לא לחרוג עם j+1 במקרה של מערך מלא.',
+            () => 'נסו שוב. (ניתן להיעזר ברמז למטה)'
+          );
+
+          const checkQ10 = () => handleBugSubmit(10, 2,
+            'באג Early Exit אותר! הפקודה else return false בתוך הלולאה מסיימת את הפעולה כולה מיד אחרי שבדקנו רק את הסוכן הראשון! היא לא מאפשרת להמשיך לחפש.',
+            { 0: 'לולאת החיפוש סורקת את הסוכנים הקיימים (עד currentIndex) בצורה תקינה.', 1: 'התנאי לבדיקה אם שם הקוד תואם (ולהחזיר מיד True אם כן) - הוא נכון לחלוטין.', 3: 'סגירת הבלוק תקינה.' }
+          );
+
+          const checkQ11 = () => handleCodeSubmit(11,
+            (a) => ({ isCorrect: a === 'false' }),
+            'מעולה! רק אם סיימנו לסרוק את *כל* הלולאה ולא מצאנו את שם הסוכן, אז נוכל להכריז שהוא לא קיים ולהחזיר שקר.',
+            () => 'נסו שוב. (ניתן להיעזר ברמז למטה)'
+          );
+
+          const checkQ12 = () => handleCodeSubmit(12,
+            (a) => ({ isCorrect: a === 'agents[i].getalias()' || a === 'this.agents[i].getalias()' }),
+            'מעולה! הצלחת למשוך את הנתון הפרטי (שם הקוד) באמצעות הפעולה הציבורית.',
+            () => 'נסו שוב. (ניתן להיעזר ברמז למטה)'
+          );
+
+          const checkQ13 = () => handleCodeSubmit(13,
+            (a) => ({ isCorrect: a === 'agents[i].getlevel()' || a === 'this.agents[i].getlevel()' }),
+            'שליפת נתונים מתוך מערך עצמים הושלמה בהצלחה! השתלטת על המערכת.',
+            () => 'נסו שוב. (ניתן להיעזר ברמז למטה)'
+          );
+
+          // --- Data Arrays for Bug Hunting Questions ---
+          const q2Options = [
+            { id: 0, code: "if (this.currentIndex >= this.agents.Length) return false;" },
+            { id: 1, code: "this.agents[this.currentIndex] = new Agent(a);" },
+            { id: 2, code: "return true; // סיום הוספה" }
+          ];
+
+          const q4Options = [
+            { id: 0, code: "int sum = 0;" },
+            { id: 1, code: "for (int i = 0; i < this.agents.Length; i++) {" },
+            { id: 2, code: "  sum += this.agents[i].GetLevel();" },
+            { id: 3, code: "}\nreturn (double)sum / this.currentIndex;" }
+          ];
+
+          const q6Options = [
+            { id: 0, code: "Agent best = this.agents[0];" },
+            { id: 1, code: "for (int i = 1; i < this.currentIndex; i++) {" },
+            { id: 2, code: "  if (this.agents[i].GetLevel() > best.GetLevel()) \n      best = this.agents[i];" },
+            { id: 3, code: "}\nreturn best;" }
+          ];
+
+          const q8Options = [
+            { id: 0, code: "for (int j = index; j < this.currentIndex; j++) {" },
+            { id: 1, code: "  this.agents[j] = this.agents[j+1];" },
+            { id: 2, code: "}" },
+            { id: 3, code: "this.currentIndex--;" }
+          ];
+
+          const q10Options = [
+            { id: 0, code: "for (int i = 0; i < this.currentIndex; i++) {" },
+            { id: 1, code: "  if (this.agents[i].GetAlias() == searchName) \n      return true;" },
+            { id: 2, code: "  else \n      return false;" },
+            { id: 3, code: "}\nreturn false;" }
+          ];
+
+          // --- Helper Components ---
+          const renderBugOptions = (qNum, options) => (
+            <div className="flex flex-col gap-1 my-1">
+              {options.map((opt) => (
+                <button
+                  key={opt.id}
+                  onClick={() => updateAnswer(qNum, opt.id)}
+                  className={`text-left px-2 py-1.5 rounded transition-all whitespace-pre overflow-x-hidden text-ellipsis text-xs sm:text-sm ${
+                    answers[qNum] === opt.id 
+                      ? 'bg-fuchsia-950/80 border border-fuchsia-500 text-fuchsia-200' 
+                      : 'bg-transparent border border-transparent hover:bg-violet-900/40 text-violet-200'
+                  }`}
+                  dir="ltr"
+                >
+                  {opt.code}
+                </button>
+              ))}
+            </div>
+          );
+
+          const renderHintAndReveal = (hintText, revealText) => (
+            <div className="flex flex-col gap-3 mt-5 pt-4 border-t border-violet-800/50">
+              {!showHint && (
+                <button onClick={() => setShowHint(true)} className="text-sm self-start flex items-center gap-2 bg-violet-900/50 hover:bg-violet-800/50 text-fuchsia-300 px-4 py-2 rounded-lg border border-violet-700 transition-colors shadow-sm">
+                  <RadioReceiver className="w-4 h-4" /> בקש רמז
+                </button>
+              )}
+              {showHint && (
+                <div className="bg-fuchsia-950/30 border border-fuchsia-800/40 p-3 sm:p-4 rounded-lg text-sm text-fuchsia-200 flex flex-col gap-4 animate-in fade-in duration-300">
+                  <div className="flex items-start gap-2">
+                    <RadioReceiver className="w-5 h-5 shrink-0 mt-0.5 text-fuchsia-400" />
+                    <p className="text-sm sm:text-base"><span className="font-bold text-fuchsia-400">האקר בכיר:</span> "{hintText}"</p>
+                  </div>
+                  {!showReveal && (
+                    <button onClick={() => setShowReveal(true)} className="text-sm self-start bg-rose-900/50 hover:bg-rose-800/50 text-rose-300 px-4 py-2 rounded-lg border border-rose-700 transition-colors shadow-sm">
+                      עדיין תקוע? גלה לי
+                    </button>
+                  )}
+                  {showReveal && (
+                    <div className="p-3 bg-black/60 rounded border border-rose-900/50 text-rose-200 animate-in fade-in zoom-in duration-300 overflow-x-auto">
+                      <span className="font-bold text-rose-400 block mb-1">תשובה / תבנית השלמה:</span>
+                      <span className="font-mono text-cyan-300 text-sm sm:text-base whitespace-nowrap" dir="ltr">{revealText}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+
+          return (
+            <div dir="rtl" className="min-h-screen bg-[#0a0514] text-violet-100 font-sans flex items-center justify-center p-2 sm:p-4 selection:bg-fuchsia-900/50">
+              <div className="max-w-3xl w-full bg-[#130b29] rounded-xl shadow-[0_0_40px_rgba(168,85,247,0.15)] border border-violet-800/50 overflow-hidden relative">
+                
+                {/* Header */}
+                <div className="bg-[#0f0822] p-3 sm:p-5 flex items-center gap-2 sm:gap-3 border-b border-fuchsia-900/30">
+                  <Ghost className="text-fuchsia-500 w-5 h-5 sm:w-7 sm:h-7 shrink-0" />
+                  <h1 className="text-base sm:text-2xl font-bold text-fuchsia-400 tracking-tight line-clamp-1 sm:line-clamp-none">מבצע "חוליית רפאים": סייבר עצמים</h1>
+                  <div className="mr-auto text-[10px] sm:text-sm text-fuchsia-300 bg-fuchsia-950/40 px-2 sm:px-3 py-1 rounded-full border border-fuchsia-800/40 font-mono whitespace-nowrap">
+                    {step < 14 ? `שלב ${step} / 13` : 'המבצע הושלם'}
+                  </div>
+                </div>
+
+                {/* Content Area */}
+                <div className="p-4 sm:p-6 lg:p-8">
+                  
+                  {/* Step 0: Intro */}
+                  {step === 0 && (
+                    <div className="space-y-4 sm:space-y-5 animate-in fade-in duration-500">
+                      <h2 className="text-xl sm:text-2xl font-bold text-white">הזדהות ותדריך מבצעי</h2>
+                      <p className="text-sm sm:text-base leading-relaxed text-violet-200">
+                        {isF === true ? 'סוכנת, ברוכה הבאה' : (gender === 'M' ? 'סוכן, ברוך הבא' : 'ברוכים הבאים')} לשלב המעשי. כעת ניישם את מה שלמדנו ונפרוץ למערך העצמים.
+                      </p>
+                      <p className="text-sm sm:text-base leading-relaxed text-violet-200">
+                        מטרתנו היא מחלקת <code>CyberSquad</code> (צוות סייבר) של חברת האקרים יריבה. הצוות מכיל מערך של עצמים מסוג <code>Agent</code>. עליכם לאתר ולתקן 13 פרצות.
+                      </p>
+                      
+                      <div className="bg-fuchsia-950/30 border border-fuchsia-800/40 p-3 rounded-lg text-sm text-fuchsia-200 flex items-start gap-2 mb-4">
+                        <Info className="w-5 h-5 shrink-0 mt-0.5 text-fuchsia-400" />
+                        <p>
+                          <strong className="text-fuchsia-400">הנחיית מבצע קריטית:</strong> במערך של עצמים, אנו משתמשים <strong className="underline">אך ורק בשיטת המונה (currentIndex)</strong>. כל תא ריק פשוט מכיל <code>null</code>.
+                        </p>
+                      </div>
+
+                      <div className="space-y-2 mt-4">
+                        <label className="text-fuchsia-400 text-sm font-semibold uppercase tracking-wider">שם הצופן שלך (שם מלא):</label>
+                        <input 
+                          type="text" 
+                          value={agentName}
+                          onChange={(e) => setAgentName(e.target.value)}
+                          placeholder="הכנס שם מלא לאימות מול השרת..."
+                          className="w-full bg-violet-950/30 border border-violet-700/50 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-fuchsia-500 transition-all placeholder:text-violet-700"
+                        />
+                      </div>
+
+                      <div className="space-y-2 mt-4">
+                        <label className="text-fuchsia-400 text-sm font-semibold uppercase tracking-wider">סיווג מגדר (לצורך תקשורת מוצפנת):</label>
+                        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-1">
+                          <button 
+                            onClick={() => setGender('M')} 
+                            className={`flex-1 py-3 rounded-lg border transition-all flex items-center justify-center gap-2 ${gender === 'M' ? 'bg-fuchsia-600/50 border-fuchsia-400 text-white shadow-[0_0_10px_rgba(192,38,211,0.3)]' : 'bg-violet-950/30 border-violet-700/50 text-violet-400 hover:bg-violet-900/40'}`}
+                          >
+                            👨‍💻 סוכן
+                          </button>
+                          <button 
+                            onClick={() => setGender('F')} 
+                            className={`flex-1 py-3 rounded-lg border transition-all flex items-center justify-center gap-2 ${gender === 'F' ? 'bg-fuchsia-600/50 border-fuchsia-400 text-white shadow-[0_0_10px_rgba(192,38,211,0.3)]' : 'bg-violet-950/30 border-violet-700/50 text-violet-400 hover:bg-violet-900/40'}`}
+                          >
+                            👩‍💻 סוכנת
+                          </button>
+                        </div>
+                      </div>
+
+                      <button onClick={nextStep} disabled={agentName.trim().length < 2 || !gender} className="mt-6 flex items-center gap-2 bg-fuchsia-600 hover:bg-fuchsia-500 disabled:opacity-50 text-white px-4 sm:px-6 py-3 rounded-lg font-bold w-full justify-center shadow-[0_0_15px_rgba(192,38,211,0.4)] transition-all">
+                        <FileLock2 className="w-5 h-5 shrink-0" />
+                        <span className="truncate">{isF ? 'אשרי תדריך והתחילי פריצה למבנה נתונים' : 'אשר תדריך והתחל פריצה למבנה נתונים'}</span>
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Step 1 */}
+                  {step === 1 && (
+                    <div className="space-y-4 animate-in fade-in duration-500">
+                       <div className="flex items-start gap-3">
+                        <span className="bg-fuchsia-900/50 text-fuchsia-400 p-2 rounded-lg shrink-0"><Code className="w-5 h-5"/></span>
+                        <div className="flex-1">
+                          <h2 className="text-lg font-bold text-white">משימה 1: יצירת מערך העצמים (הפעולה הבונה)</h2>
+                          <p className="text-sm text-violet-300 mt-1">
+                            לפניך מבנה המחלקה והפעולה הבונה (Constructor). עלינו להקצות מקום בזיכרון (Instantiate) למערך הסוכנים. {isF ? 'השלימי' : 'השלם'} את הקוד שמאתחל את המערך בגודל <code>maxSize</code>.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="bg-[#0a0514] rounded-lg p-3 font-mono text-xs sm:text-sm text-violet-200 border border-violet-800/50 overflow-x-auto" dir="ltr">
+<pre className="leading-relaxed">
+<span className="text-fuchsia-400">class</span> <span className="text-cyan-300">CyberSquad</span> {'{\n'}
+  <span className="text-fuchsia-400">private</span> Agent[] agents;{'\n'}
+  <span className="text-fuchsia-400">private int</span> currentIndex;{'\n\n'}
+  <span className="text-fuchsia-400">public</span> <span className="text-cyan-300">CyberSquad</span>(<span className="text-fuchsia-400">int</span> maxSize) {'{\n'}
+    <span className="text-fuchsia-400">this</span>.currentIndex = <span className="text-orange-400">0</span>;{'\n'}
+    <span className="text-fuchsia-400">this</span>.agents = <input type="text" value={answers[1]} onChange={(e) => updateAnswer(1, e.target.value)} placeholder="..." className="bg-violet-950 text-fuchsia-300 px-2 py-1 rounded border border-violet-700 focus:border-fuchsia-500 w-[100px] sm:w-[160px] md:w-[220px] mx-1" dir="ltr" spellCheck="false"/>;{'\n'}
+  {'}\n'}
+{'}'}
+</pre>
+                      </div>
+                      
+                      {renderHintAndReveal(
+                        "יצירת מערך מחייבת תמיד את המילה new, סוג העצם וסוגריים מרובעים המכילים את הגודל.",
+                        "new Agent[maxSize]"
+                      )}
+
+                      {error && <div className="flex gap-2 text-red-400 bg-red-950/50 p-3 rounded-lg text-sm mt-2"><XCircle className="w-5 h-5 shrink-0" /><p>{error}</p></div>}
+                      {successMsg && <div className="flex gap-2 text-fuchsia-400 bg-fuchsia-950/30 p-3 rounded-lg text-sm mt-2"><CheckCircle2 className="w-5 h-5 shrink-0" /><p>{successMsg}</p></div>}
+                      
+                      <button onClick={checkQ1} disabled={answers[1].trim() === '' || successMsg !== ''} className="mt-4 flex items-center gap-2 bg-fuchsia-600 hover:bg-fuchsia-500 disabled:opacity-50 text-white px-4 sm:px-6 py-3 rounded-lg font-semibold w-full justify-center shadow-lg shadow-fuchsia-900/20">
+                        {successMsg ? 'מתקדם...' : 'הזרק קוד פריצה'}
+                        {!successMsg && <Play className="w-4 h-4 ml-1 fill-current" />}
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Step 2 */}
+                  {step === 2 && (
+                    <div className="space-y-4 animate-in fade-in duration-500">
+                       <div className="flex items-start gap-3">
+                        <span className="bg-rose-900/50 text-rose-400 p-2 rounded-lg shrink-0"><Bug className="w-5 h-5"/></span>
+                        <div className="flex-1">
+                          <h2 className="text-lg font-bold text-white">משימה 2: הוספת סוכן (באג השמה בשיטת המונה)</h2>
+                          <p className="text-sm text-violet-300 mt-1">ניסינו להוסיף סוכן חדש למערך בשיטת <code>currentIndex</code>, אבל משהו חסר בפעולה. כל סוכן חדש שמוסיפים פשוט דורס את הקודם! היכן שגיאת הלוגיקה?</p>
+                        </div>
+                      </div>
+                      <div className="bg-[#0a0514] rounded-lg p-3 font-mono text-[10px] sm:text-xs md:text-sm text-violet-200 border border-violet-800/50 overflow-x-auto" dir="ltr">
+<pre className="leading-snug"><span className="text-fuchsia-400">public bool</span> <span className="text-cyan-300">AddAgent</span>(Agent a) {'{\n'}</pre>
+                        {renderBugOptions(2, q2Options)}
+<pre className="leading-snug">{'}'}</pre>
+                      </div>
+
+                      {renderHintAndReveal(
+                        "משהו חסר לפני שמחזירים true ומסיימים את הפעולה. מה עם המונה שלנו שאמור להתקדם לתא הבא?",
+                        "בשורה השלישית: return true; - חסר קידום של currentIndex לפני השורה הזו."
+                      )}
+
+                      {error && <div className="flex gap-2 text-red-400 bg-red-950/50 p-3 rounded-lg text-sm mt-2"><XCircle className="w-5 h-5 shrink-0" /><p>{error}</p></div>}
+                      {successMsg && <div className="flex gap-2 text-rose-400 bg-rose-950/50 p-3 rounded-lg text-sm mt-2"><CheckCircle2 className="w-5 h-5 shrink-0" /><p>{successMsg}</p></div>}
+                      
+                      <button onClick={checkQ2} disabled={answers[2] === null || successMsg !== ''} className="mt-4 flex items-center gap-2 bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-white px-4 sm:px-6 py-3 rounded-lg font-semibold w-full justify-center shadow-lg shadow-rose-900/20">
+                        סמן חולשה <Bug className="w-4 h-4 ml-1" />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Step 3 */}
+                  {step === 3 && (
+                    <div className="space-y-4 animate-in fade-in duration-500">
+                       <div className="flex items-start gap-3">
+                        <span className="bg-fuchsia-900/50 text-fuchsia-400 p-2 rounded-lg shrink-0"><Code className="w-5 h-5
