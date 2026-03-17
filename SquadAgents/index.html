@@ -13,16 +13,16 @@
     </script>
 
     <!-- טעינת ספריות React ו-Babel (ללא crossorigin כדי למנוע חסימות מקומיות) -->
-    <script src="[https://unpkg.com/react@18/umd/react.production.min.js](https://unpkg.com/react@18/umd/react.production.min.js)"></script>
-    <script src="[https://unpkg.com/react-dom@18/umd/react-dom.production.min.js](https://unpkg.com/react-dom@18/umd/react-dom.production.min.js)"></script>
-    <script src="[https://unpkg.com/@babel/standalone/babel.min.js](https://unpkg.com/@babel/standalone/babel.min.js)"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
     <!-- טעינת מסגרת העיצוב Tailwind CSS -->
-    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
         /* יבוא פונט עברי נקי */
-        @import url('[https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap)');
+        @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap');
         
         body { 
             font-family: 'Assistant', sans-serif; 
@@ -68,7 +68,7 @@
         // ICONS IMPLEMENTATION (תחליף לאייקונים של Lucide למערכת עצמאית)
         // ============================================================================
         const IconBase = ({ children, className = "", ...props }) => (
-            <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
                 {children}
             </svg>
         );
