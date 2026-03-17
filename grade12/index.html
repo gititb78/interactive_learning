@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 12 - Final Boss Mission</title>
+    <style>
+        /* עיצוב סייבר תואם לשכבת י"א */
+        body {
+            background-color: #0a0a0a; 
+            color: #00ff00; 
+            font-family: 'Courier New', Courier, monospace; 
+            padding: 30px;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0.15;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 2px solid #00ff00;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff;
+            text-shadow: 0 0 10px #00ff00;
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 15px;
+            font-size: 28px;
+        }
+
+        h2 {
+            color: #00ff00;
+            border-bottom: 1px solid #004400;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        
+        h3 {
+            color: #aaffaa;
+            margin-bottom: 5px;
+        }
+
+        .typing-effect {
+            overflow: hidden; 
+            border-right: .15em solid orange; 
+            white-space: nowrap; 
+            margin: 0 auto; 
+            letter-spacing: .15em;
+            animation: 
+              typing 3.5s steps(40, end),
+              blink-caret .75s step-end infinite;
+        }
+
+        @keyframes typing {
+          from { width: 0 }
+          to { width: 100% }
+        }
+
+        @keyframes blink-caret {
+          from, to { border-color: transparent }
+          50% { border-color: orange; }
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 5px;
+        }
+
+        li::before {
+            content: "> "; 
+            color: #fff;
+        }
+
+        li {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .highlight {
+            color: #ffaa00; /* צבע זהוב להדגשות */
+            font-weight: bold;
+        }
+
+        .warning-box {
+            background-color: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff0000;
+            color: #ffcccc;
+            padding: 15px;
+            margin-top: 30px;
+            border-radius: 5px;
+        }
+
+        .warning-box h3 {
+            margin-top: 0;
+            color: #ff4444;
+            text-shadow: 0 0 5px #ff0000;
+        }
+
+        .warning-box li::before {
+            content: "! ";
+            color: #ff0000;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 40px;
+            color: #00ff00;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .back-link:hover {
+            color: #fff;
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>[ GRADE_12_FINAL_BOSS ]</h1>
+        
+        <p class="typing-effect">טוען נתוני שנת לימודים אחרונה... חגורו חגורות.</p>
+        
+        <h2>__המשימה_הראשית (Survive_The_Year.exe)</h2>
+        <p>ברוכים הבאים לשלב הסופי. המטרה המרכזית שלכם פשוטה להגדרה אבל קשה לביצוע: <strong>לשרוד את השנה הזו איתי, גיתית</strong>.<br>
+        העומס על המעבד יעמוד על <span class="highlight">לא פחות מ-7 שעות שבועיות</span>. System Status: Challenging but Possible.</p>
+
+        <h2>__פיצול_תהליכים (Course_Modules)</h2>
+        <p>השנה, הזיכרון שלכם יחולק לשני תהליכים מרכזיים:</p>
+
+        <h3>1. מודלים חישוביים [Offline_Mode]</h3>
+        <ul>
+            <li>דרישות חומרה: עיפרון ומחברת בלבד (Low-Tech לחלוטין).</li>
+            <li><span class="highlight">/* הערת מפתחת: זה הנושא שאני הכי אוהבת! */</span></li>
+        </ul>
+
+        <h3>2. מבני נתונים [Data_Structures]</h3>
+        <p>אזהרת מערכת: עקומת הלמידה מתחילה ברמת קושי Maximum, ולאט לאט מתרככת ונהיית קלה יותר.</p>
+        <ul>
+            <li>[מודול 01] רקורסיה (Recursion) - לולאה בתוך לולאה בתוך...</li>
+            <li>[מודול 02] יעילות (Time_Complexity).</li>
+            <li>[מודול 03] שרשרת חוליות (Linked_Lists).</li>
+            <li>[מודול 04] תור (Queues - FIFO).</li>
+            <li>[מודול 05] עצים בינאריים (Binary_Trees).</li>
+        </ul>
+
+        <div class="warning-box">
+            <h3>[ הנדסה_חברתית - נהלי עבודה ]</h3>
+            <ul>
+                <li><strong>Log File מסודר:</strong> מחברת מסודרת עם כל החומר היא קריטית לשרידות המערכת שלכם.</li>
+                <li><strong>קוד מקורי בלבד:</strong> שיעורי בית מכינים לבד. 
+                    <ul>
+                        <li>העתקה מ-StackOverflow או מחבר לכתה לא מקמפלת אצלי. תתמודדו עם הבאגים שלכם בעצמכם.</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <a href="../" class="back-link"><< חזרה למסך הראשי</a>
+    </div>
+
+</body>
+</html>
