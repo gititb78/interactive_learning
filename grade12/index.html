@@ -33,6 +33,7 @@
             border: 2px solid #00ff00;
             padding: 20px;
             box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            background-color: rgba(0, 20, 0, 0.5);
         }
 
         h1 {
@@ -94,7 +95,7 @@
         }
         
         .highlight {
-            color: #ffaa00; /* צבע זהוב להדגשות */
+            color: #ffaa00; 
             font-weight: bold;
         }
 
@@ -132,6 +133,30 @@
             text-shadow: 0 0 5px #00ff00;
         }
 
+        /* 📱 התאמות למסכי טלפון (מובייל) 📱 */
+        @media (max-width: 600px) {
+            body {
+                padding: 15px 10px;
+            }
+            .container {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 22px;
+            }
+            h2 {
+                font-size: 18px;
+            }
+            li {
+                font-size: 15px;
+            }
+            .typing-effect {
+                font-size: 14px;
+                white-space: normal;
+                border-right: none;
+                animation: none; 
+            }
+        }
     </style>
 </head>
 <body>
