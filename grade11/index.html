@@ -7,15 +7,14 @@
     <style>
         /* עיצוב סייבר בסיסי */
         body {
-            background-color: #0a0a0a; /* שחור עמוק */
-            color: #00ff00; /* ירוק זוהר */
-            font-family: 'Courier New', Courier, monospace; /* פונט טרמינל */
+            background-color: #0a0a0a; 
+            color: #00ff00; 
+            font-family: 'Courier New', Courier, monospace; 
             padding: 30px;
             margin: 0;
             line-height: 1.6;
         }
 
-        /* אפקט "סריקה" עדין על כל המסך */
         body::before {
             content: " ";
             display: block;
@@ -34,6 +33,7 @@
             border: 2px solid #00ff00;
             padding: 20px;
             box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            background-color: rgba(0, 20, 0, 0.5);
         }
 
         h1 {
@@ -53,9 +53,9 @@
         }
 
         .typing-effect {
-            overflow: hidden; /* מסתיר את הטקסט שטרם "הוקלד" */
-            border-right: .15em solid orange; /* הסמן המהבהב */
-            white-space: nowrap; /* מונע מהטקסט לרדת שורה בזמן ההקלדה */
+            overflow: hidden; 
+            border-right: .15em solid orange; 
+            white-space: nowrap; 
             margin: 0 auto; 
             letter-spacing: .15em;
             animation: 
@@ -79,7 +79,7 @@
         }
 
         li::before {
-            content: "> "; /* סמל טרמינל לפני כל פריט */
+            content: "> "; 
             color: #fff;
         }
 
@@ -122,6 +122,30 @@
             text-shadow: 0 0 5px #00ff00;
         }
 
+        /* 📱 התאמות למסכי טלפון (מובייל) 📱 */
+        @media (max-width: 600px) {
+            body {
+                padding: 15px 10px;
+            }
+            .container {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 22px;
+            }
+            h2 {
+                font-size: 18px;
+            }
+            li {
+                font-size: 15px;
+            }
+            .typing-effect {
+                font-size: 14px;
+                white-space: normal; /* מאפשר לטקסט המוקלד לרדת שורה בטלפון */
+                border-right: none;
+                animation: none; /* מכבה את האנימציה בטלפון כדי למנוע חיתוך מילים */
+            }
+        }
     </style>
 </head>
 <body>
