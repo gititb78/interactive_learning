@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>משימה 01 | Data Extraction</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            background-color: #0a0a0a; color: #00ff00; 
+            font-family: 'Courier New', Courier, monospace; 
+            padding: 30px 15px; margin: 0; line-height: 1.6;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        body::before {
+            content: " "; display: block; position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px; z-index: 100; pointer-events: none; opacity: 0.15;
+        }
+        .container {
+            width: 100%; max-width: 800px; border: 2px solid #00ff00;
+            padding: 30px; box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            background-color: rgba(0, 20, 0, 0.5);
+        }
+        h1 {
+            color: #fff; text-shadow: 0 0 10px #ff0000;
+            border-bottom: 1px dashed #ff0000; padding-bottom: 10px;
+            font-size: 26px; text-align: center; margin-top: 0;
+        }
+        h2 { color: #aaffaa; font-size: 20px; border-bottom: 1px solid #004400; display: inline-block; padding-bottom: 5px; }
+        .code-block {
+            background-color: #000; border: 1px solid #00ff00;
+            padding: 15px; direction: ltr; text-align: left;
+            font-family: Consolas, monospace; color: #fff;
+            margin: 20px 0; overflow-x: auto;
+        }
+        .highlight { color: #ffaa00; font-weight: bold; }
+        .back-link {
+            display: block; text-align: center; margin-top: 40px;
+            color: #00ff00; text-decoration: none; font-weight: bold;
+        }
+        .back-link:hover { color: #fff; text-shadow: 0 0 5px #00ff00; }
+        
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            h1 { font-size: 20px; }
+            h2 { font-size: 18px; }
+            body { padding: 15px 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>[ MISSION_01 : DATA_EXTRACTION ]</h1>
+        
+        <h2>> רקע מבצעי</h2>
+        <p>סוכנים, הצלחנו ליירט תשדורת נתונים משרת עוין. התשדורת הגיעה אלינו בתור מערך חד-ממדי של מספרים שלמים. כדי לפרוץ למערכת שלהם, אנחנו חייבים לחלץ את <span class="highlight">"מפתח ההצפנה"</span> מתוך רצף הנתונים.</p>
+
+        <h2>> אלגוריתם הפיצוח</h2>
+        <p>מחלקת המחקר שלנו גילתה שמפתח ההצפנה מסתתר בתוך "חריגות" (Spikes) ברצף. <br>
+        <strong>חריגה מוגדרת כמספר שגדול ממש גם מהמספר שלפניו וגם מהמספר שאחריו במערך.</strong><br>
+        מפתח ההצפנה הסופי הוא <strong>הסכום</strong> של כל החריגות הללו.</p>
+
+        <div class="code-block">
+            // Example Transmission Data:<br>
+            // int[] data = { 4, 8, 3, 5, 9, 2, 7 };<br><br>
+            // Spikes identified: <br>
+            // 8 (greater than 4 and 3)<br>
+            // 9 (greater than 5 and 2)<br>
+            // Encryption Key = 8 + 9 = 17
+        </div>
+
+        <h2>> דרישות המערכת (משימת התכנות)</h2>
+        <p>כתבו פעולה (Method) שמקבלת את מערך הנתונים (מערך של שלמים בגודל N). הפעולה תסרוק את התשדורת, תאתר את כל החריגות, ותחזיר את מפתח ההצפנה המחושב.</p>
+        <p style="color: #ff5555;"><strong>אזהרת קומפילציה מגיטיט:</strong> שימו לב לגבולות המערך! חריגה מגבולות המערך (IndexOutOfRange) תפעיל את האזעקה של השרת ותכשיל את המשימה.</p>
+
+        <a href="index.html" class="back-link"><< חזרה ללוח המשימות (י"א)</a>
+    </div>
+
+</body>
+</html>
