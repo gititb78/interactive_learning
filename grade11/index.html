@@ -88,6 +88,22 @@
             font-size: 18px;
         }
 
+        /* עיצוב מיוחד לקישור של המשימות */
+        .mission-link {
+            color: #ffaa00;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        .mission-link:hover {
+            color: #fff;
+            text-shadow: 0 0 10px #ffaa00;
+            transform: scale(1.02);
+        }
+
         .warning-box {
             background-color: rgba(255, 0, 0, 0.1);
             border: 1px solid #ff0000;
@@ -141,9 +157,9 @@
             }
             .typing-effect {
                 font-size: 14px;
-                white-space: normal; /* מאפשר לטקסט המוקלד לרדת שורה בטלפון */
+                white-space: normal; 
                 border-right: none;
-                animation: none; /* מכבה את האנימציה בטלפון כדי למנוע חיתוך מילים */
+                animation: none; 
             }
         }
     </style>
@@ -165,6 +181,11 @@
             <li>[שלב 04] ארכיטקטורת נתונים מתקדמת (עצמים מורכבים).</li>
         </ul>
 
+        <h2>__משימות_פעילות (Active_Missions)</h2>
+        <ul>
+            <li><a href="mission01.html" class="mission-link">>> RUN: משימה 01 - חילוץ נתונים (Data_Extraction.exe)</a></li>
+        </ul>
+
         <div class="warning-box">
             <h3>[ הנדסה_חברתית - המלצות המורה ]</h3>
             <ul>
@@ -180,7 +201,3 @@
         </div>
 
         <a href="../" class="back-link"><< חזרה למאגר הראשי</a>
-    </div>
-
-</body>
-</html>
