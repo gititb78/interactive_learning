@@ -5,12 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מערכת ראשית | גיתית בר-אל כהן</title>
     <style>
-        /* עיצוב סייבר תואם לשאר האתר */
+        /* הגדרות בסיסיות */
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             background-color: #0a0a0a; 
             color: #00ff00; 
             font-family: 'Courier New', Courier, monospace; 
-            padding: 30px 20px;
+            padding: 30px 15px; /* הקטנתי קצת את השוליים כדי שיתאים לטלפון */
             margin: 0;
             line-height: 1.6;
             display: flex;
@@ -37,12 +41,12 @@
             padding: 40px 20px;
             box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
             text-align: center;
-            background-color: rgba(0, 20, 0, 0.5); /* רקע קצת יותר כהה להבלטה */
+            background-color: rgba(0, 20, 0, 0.5);
         }
 
         .terminal-header {
             text-align: left;
-            direction: ltr; /* אנגלית משמאל לימין */
+            direction: ltr; 
             font-size: 14px;
             color: #aaffaa;
             margin-bottom: 30px;
@@ -68,15 +72,21 @@
             font-size: 22px;
             font-weight: normal;
             margin-top: 0;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             text-shadow: 0 0 5px #00ff00;
+        }
+
+        p.intro-text {
+            margin-bottom: 30px; 
+            font-size: 18px;
         }
 
         .button-container {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             justify-content: center;
-            flex-wrap: wrap; /* שבירת שורות במסכים קטנים */
+            flex-wrap: wrap; /* מאפשר לכפתורים לרדת שורה אם אין מקום */
+            width: 100%;
         }
 
         .cyber-button {
@@ -84,9 +94,9 @@
             background-color: transparent;
             color: #00ff00;
             border: 2px solid #00ff00;
-            padding: 15px 30px;
+            padding: 15px 20px;
             text-decoration: none;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -95,7 +105,7 @@
             overflow: hidden;
             flex: 1;
             min-width: 200px;
-            max-width: 300px;
+            max-width: 100%; /* מאפשר לכפתור לתפוס את כל הרוחב בטלפון */
         }
 
         .cyber-button:hover {
@@ -122,6 +132,32 @@
             color: #555;
         }
 
+        /* 📱 התאמות למסכי טלפון (מובייל) 📱 */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 15px;
+            }
+            h1 {
+                font-size: 26px; /* הקטנת הכותרת בטלפון */
+            }
+            h2 {
+                font-size: 18px;
+            }
+            p.intro-text {
+                font-size: 16px;
+            }
+            .terminal-header {
+                font-size: 11px; /* הקטנת טקסט הסטטוס באנגלית */
+            }
+            .button-container {
+                flex-direction: column; /* מסדר את הכפתורים אחד מתחת לשני */
+                align-items: center;
+            }
+            .cyber-button {
+                width: 100%; /* כפתורים ברוחב מלא בטלפון */
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -137,7 +173,7 @@
         <h1>גיתית בר-אל כהן</h1>
         <h2>[ מורה למדעי המחשב ]</h2>
 
-        <p style="margin-bottom: 30px; font-size: 18px;">
+        <p class="intro-text">
             ברוכים הבאים למערכת המרכזית. נא לבחור את סביבת העבודה הרלוונטית אליכם כדי להוריד את משימות השלב.
         </p>
 
