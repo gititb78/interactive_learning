@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מבנה הבגרות - פענוח מודולים | גיתית בר-אל כהן</title>
+    <style>
+        /* עיצוב סייבר בסיסי */
+        body {
+            background-color: #0a0a0a; 
+            color: #00ff00; 
+            font-family: 'Courier New', Courier, monospace; 
+            padding: 30px;
+            margin: 0;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0.15;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            border: 2px solid #00ff00;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            background-color: rgba(0, 20, 0, 0.5);
+            text-align: center;
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff;
+            text-shadow: 0 0 10px #00ff00;
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 15px;
+            font-size: 28px;
+        }
+
+        .typing-effect {
+            overflow: hidden; 
+            border-right: .15em solid orange; 
+            white-space: nowrap; 
+            margin: 0 auto; 
+            letter-spacing: .15em;
+            animation: 
+              typing 3.5s steps(40, end),
+              blink-caret .75s step-end infinite;
+        }
+
+        @keyframes typing {
+          from { width: 0 }
+          to { width: 100% }
+        }
+
+        @keyframes blink-caret {
+          from, to { border-color: transparent }
+          50% { border-color: orange; }
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: right;
+            margin-top: 30px;
+        }
+
+        li::before {
+            content: "> "; 
+            color: #fff;
+        }
+
+        li {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .highlight {
+            color: #ffaa00; 
+            font-weight: bold;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 40px;
+            color: #00ff00;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .back-link:hover {
+            color: #fff;
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+        /* 📱 התאמות למסכי טלפון (מובייל) 📱 */
+        @media (max-width: 600px) {
+            body {
+                padding: 15px 10px;
+            }
+            .container {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 22px;
+            }
+            li {
+                font-size: 15px;
+            }
+            .typing-effect {
+                font-size: 14px;
+                white-space: normal;
+                border-right: none;
+                animation: none; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>[ UNIT_STRUCTURE_DECRYPTION ]</h1>
+        
+        <p class="typing-effect">מתכנתים, הנה הפירוט המלא של המודולים המבצעיים...</p>
+        
+        <p style="text-align: right; margin-top: 20px;">להלן הפענוח הסופי של מבנה הבגרות במדעי המחשב:</p>
+
+        <ul>
+            <li><span class="highlight">899371 (Module_Alpha):</span> שאלון 3 יח"ל מתוך 5 בסוף כיתה י"א.</li>
+            <li><span class="highlight">899373 (Project_Beta):</span> פרויקט תכנות - סוף י"א (יצירת משחק בסביבות Winform).</li>
+            <li><span class="highlight">899271 (Completion_Gamma):</span> שאלון השלמה ל-5 יח"ל - סוף י"ב. השאלון הוא שאלון חוסם ולכן צריך לקבל בו לפחות 55 ללא קשר לציון ההגשה.</li>
+        </ul>
+
+        <p style="text-align: right; margin-top: 20px;">המערכת מזהירה: אי-עמידה בתנאי המעבר של מודול <span class="highlight">Gamma</span> תוביל לשגיאת מערכת חמורה (System Error) בציון הסופי.</p>
+
+        <a href="../" class="back-link"><< חזרה למסך הראשי</a>
+    </div>
+
+</body>
+</html>
