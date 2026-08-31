@@ -2,157 +2,111 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>חזרה למדעי המחשב - כיתה י"א</title>
-    <!-- ספרייה לצביעת קוד C# -->
+    <!-- ספרייה לצביעת קוד C# כמו ב-Visual Studio -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <style>
-        :root {
-            --bg-color: #1e1e1e;
-            --text-color: #d4d4d4;
-            --accent-color: #569cd6;
-            --accent-secondary: #4ec9b0;
-        }
-        
         body, html {
-            margin: 0; 
-            padding: 0; 
-            height: 100%;
+            margin: 0; padding: 0; height: 100%;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            overflow: hidden; /* מסתיר את פס הגלילה החיצוני */
+            background-color: #1e1e1e; /* צבע רקע כהה כמו סביבת תכנות */
+            color: #d4d4d4;
+            overflow: hidden; /* מונע גלילה של כל העמוד */
         }
         
         .slides-container {
-            height: 100vh; /* גובה מסך מלא */
-            height: 100svh; /* התאמה לדפדפנים בנייד */
-            overflow-y: scroll;
-            scroll-snap-type: y mandatory; /* מגדיר גלילה שננעלת על השקופית */
-            scroll-behavior: smooth;
-        }
-        
-        /* הסתרת פס הגלילה הפנימי לקבלת מראה נקי */
-        .slides-container::-webkit-scrollbar {
-            display: none;
-        }
-        .slides-container {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+            position: relative;
+            width: 100%; height: 100%;
         }
         
         .slide {
-            height: 100vh;
-            height: 100svh;
-            width: 100%;
-            scroll-snap-align: start; /* נקודת העצירה של הגלילה */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 5vw;
-            box-sizing: border-box;
-            position: relative;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0; transition: opacity 0.4s ease-in-out;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            padding: clamp(15px, 4vw, 40px); box-sizing: border-box;
+            z-index: 1; pointer-events: none;
         }
         
+        .slide.active {
+            opacity: 1; z-index: 2; pointer-events: auto;
+        }
+
+        /* מעטפת תוכן כדי למנוע חיתוך במסכים קטנים מאוד */
         .slide-content {
-            width: 100%;
-            max-width: 1200px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            width: 95%; max-width: 1000px;
+            max-height: 85vh; /* משאיר מקום לכפתורים למטה */
+            overflow-y: auto; /* מאפשר גלילה פנימית רק אם התוכן ארוך מדי לסלולרי */
+            display: flex; flex-direction: column;
+            -ms-overflow-style: none; scrollbar-width: none;
         }
+        .slide-content::-webkit-scrollbar { display: none; }
         
-        h1, h2 { 
-            color: var(--accent-color); 
-            text-shadow: 0 0 10px rgba(86, 156, 214, 0.2); 
-            margin-bottom: 2vh;
+        .center-slide {
+            align-items: center; justify-content: center; text-align: center;
         }
+
+        h1, h2 { color: #569cd6; text-shadow: 0 0 10px rgba(86, 156, 214, 0.2); margin-bottom: 20px;}
+        h1 { font-size: clamp(2.5rem, 6vw, 4rem); margin-bottom: 10px;}
+        h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); text-align: right; width: 100%; border-bottom: 2px solid #569cd6; padding-bottom: 10px;}
         
-        h1 { 
-            font-size: clamp(2.5rem, 5vw, 4.5rem); 
-            text-align: center;
-        }
-        
-        h2 { 
-            font-size: clamp(2rem, 4vw, 3.2rem); 
-            border-bottom: 2px solid var(--accent-color); 
-            padding-bottom: 10px;
-            width: 100%;
-            text-align: right;
-        }
-        
-        .subtitle {
-            font-size: clamp(1.5rem, 3vw, 2.5rem);
-            color: var(--accent-secondary);
-            margin: 0;
-            text-align: center;
-        }
-        
+        .subtitle { font-size: clamp(1.5rem, 3vw, 2.2rem); color: #4ec9b0; margin-bottom: 10px; }
+        .desc { font-size: clamp(1.2rem, 2vw, 1.6rem); }
+
         .content {
-            width: 100%;
-            font-size: clamp(1.2rem, 2vw, 1.8rem);
-            text-align: right;
-            line-height: 1.6;
+            width: 100%; font-size: clamp(1.1rem, 2.2vw, 1.5rem); text-align: right;
         }
-        
-        .content p, .content li { margin-bottom: 1vh; }
+        .content p, .content li { margin-bottom: 12px; line-height: 1.6; }
         
         /* עיצוב בלוק הקוד משמאל לימין מותאם רספונסיבית */
         pre {
             background: #1e1e1e !important;
             border: 1px solid #444;
             border-radius: 8px;
-            padding: 1.5rem !important;
-            font-size: clamp(1rem, 1.5vw, 1.4rem) !important;
+            padding: clamp(10px, 2vw, 20px) !important;
+            font-size: clamp(0.9rem, 1.5vw, 1.3rem) !important;
             text-align: left;
-            direction: ltr;
+            direction: ltr; /* חובה כדי שהקוד לא יתהפך */
             box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            margin-top: 2vh;
-            width: 100%;
-            box-sizing: border-box;
-            overflow-x: auto;
+            margin-top: 20px;
+            width: 100%; box-sizing: border-box;
+            overflow-x: auto; /* גלילה אופקית אם הקוד ארוך מדי לסלולרי */
         }
         
         .exercise-grid {
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-            gap: 20px; 
-            direction: ltr; 
-            margin-top: 3vh;
-            width: 100%;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); 
+            gap: 15px; direction: ltr; margin-top: 30px; width: 100%;
         }
-        
         .exercise-item {
-            background: #252526; 
-            border: 1px solid #444; 
-            padding: 2vh;
-            border-radius: 8px; 
-            text-align: center; 
-            font-size: clamp(1.5rem, 2.5vw, 2.2rem); 
-            font-family: monospace;
-            color: #ce9178; 
-            font-weight: bold;
+            background: #252526; border: 1px solid #444; padding: clamp(15px, 3vw, 25px);
+            border-radius: 8px; text-align: center; font-size: clamp(1.5rem, 3vw, 2.2rem); 
+            font-family: monospace; color: #ce9178; font-weight: bold;
         }
         
+        .nav-controls {
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 10; display: flex; gap: 20px; direction: ltr;
+        }
+        button {
+            background: #007acc; color: white; border: none; padding: 10px 25px;
+            font-size: clamp(1rem, 1.5vw, 1.2rem); border-radius: 5px; cursor: pointer; transition: 0.2s;
+        }
+        button:hover { background: #005999; }
+        button:disabled { background: #444; color: #888; cursor: not-allowed; }
         .highlight { color: #dcdcaa; font-weight: bold; }
-        
-        /* התאמות ספציפיות למסכים קטנים מאוד */
-        @media (max-width: 768px) {
-            h2 { text-align: center; }
-            .content { text-align: right; }
-            pre { padding: 1rem !important; }
-        }
     </style>
 </head>
 <body>
 <div class="slides-container" id="slides">
     <!-- Slide 1 -->
-    <div class="slide">
-        <div class="slide-content" style="align-items: center;">
+    <div class="slide active">
+        <div class="slide-content center-slide">
             <h1>ברוכים השבים! 👋</h1>
             <p class="subtitle">מדעי המחשב - כיתה י"א</p>
-            <p style="font-size: clamp(1.2rem, 2vw, 1.8rem); margin-top: 2vh; text-align: center;">חזרה ממוקדת על יסודות C#</p>
+            <p class="desc">חזרה ממוקדת על יסודות C#</p>
         </div>
     </div>
     
@@ -285,24 +239,74 @@ public static void Main(string[] args)
     </div>
 </div>
 
+<!-- כפתורי ניווט -->
+<div class="nav-controls">
+    <button id="prevBtn" onclick="prevSlide()" disabled>הקודם</button>
+    <button id="nextBtn" onclick="nextSlide()">הבא</button>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
 <script>
-    // תמיכה בניווט עם מקשי החצים והרווח (מותאם לכיווניות RTL)
-    const container = document.getElementById('slides');
-    
-    document.addEventListener('keydown', (e) => {
-        const slideHeight = window.innerHeight;
-        // חץ שמאלה, למטה או רווח - עובר לשקופית הבאה
-        if (e.key === 'ArrowLeft' || e.key === 'ArrowDown' || e.key === ' ') {
-            e.preventDefault();
-            container.scrollBy({ top: slideHeight, behavior: 'smooth' });
-        } 
-        // חץ ימינה או למעלה - חוזר לשקופית הקודמת
-        else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
-            e.preventDefault();
-            container.scrollBy({ top: -slideHeight, behavior: 'smooth' });
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    function updateButtons() {
+        prevBtn.disabled = currentSlide === 0;
+        nextBtn.disabled = currentSlide === slides.length - 1;
+    }
+
+    function showSlide(index) {
+        slides.forEach(slide => slide.classList.remove('active'));
+        slides[index].classList.add('active');
+        updateButtons();
+    }
+
+    function nextSlide() {
+        if (currentSlide < slides.length - 1) {
+            currentSlide++;
+            showSlide(currentSlide);
         }
+    }
+
+    function prevSlide() {
+        if (currentSlide > 0) {
+            currentSlide--;
+            showSlide(currentSlide);
+        }
+    }
+
+    // ניווט באמצעות חצים במקלדת ורווח
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            nextSlide();
+        } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+            prevSlide();
+        } else if (e.key === ' ') {
+            e.preventDefault();
+            nextSlide();
+        }
+    });
+
+    // תמיכה בהחלקה (Swipe) למסכי מגע
+    let touchstartX = 0;
+    let touchendX = 0;
+    
+    function handleGesture() {
+        // בגלל שזה מימין לשמאל, החלקה שמאלה (מספרים יורדים) מעבירה קדימה
+        if (touchendX < touchstartX - 50) nextSlide();
+        if (touchendX > touchstartX + 50) prevSlide();
+    }
+    
+    document.addEventListener('touchstart', e => {
+        touchstartX = e.changedTouches[0].screenX;
+    });
+    
+    document.addEventListener('touchend', e => {
+        touchendX = e.changedTouches[0].screenX;
+        handleGesture();
     });
 </script>
 </body>
