@@ -4,146 +4,225 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>חזרה למדעי המחשב - כיתה י"א</title>
-    <!-- ספרייה לצביעת קוד C# כמו ב-Visual Studio -->
+    <!-- ספרייה לצביעת קוד C# -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <style>
+        :root {
+            --bg-color: #1e1e1e;
+            --text-color: #d4d4d4;
+            --accent-color: #569cd6;
+            --accent-secondary: #4ec9b0;
+        }
+        
         body, html {
-            margin: 0; padding: 0; height: 100%;
+            margin: 0; 
+            padding: 0; 
+            height: 100%;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #1e1e1e; /* צבע רקע כהה כמו סביבת תכנות */
-            color: #d4d4d4;
-            overflow: hidden;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden; /* מסתיר את פס הגלילה החיצוני */
+        }
+        
+        .slides-container {
+            height: 100vh; /* גובה מסך מלא */
+            height: 100svh; /* התאמה לדפדפנים בנייד */
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory; /* מגדיר גלילה שננעלת על השקופית */
+            scroll-behavior: smooth;
+        }
+        
+        /* הסתרת פס הגלילה הפנימי לקבלת מראה נקי */
+        .slides-container::-webkit-scrollbar {
+            display: none;
         }
         .slides-container {
-            position: relative;
-            width: 100%; height: 100%;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
-        .slide {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0; transition: opacity 0.4s ease-in-out;
-            display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-            padding: 40px; box-sizing: border-box;
-            z-index: 1; pointer-events: none;
-        }
-        .slide.active {
-            opacity: 1; z-index: 2; pointer-events: auto;
-        }
-        h1, h2 { color: #569cd6; text-shadow: 0 0 10px rgba(86, 156, 214, 0.2); margin-bottom: 20px;}
-        h1 { font-size: 3.5rem; }
-        h2 { font-size: 2.5rem; text-align: right; width: 80%; max-width: 900px; margin-bottom: 25px; border-bottom: 2px solid #569cd6; padding-bottom: 10px;}
-        .content {
-            width: 80%; max-width: 900px; font-size: 1.4rem; text-align: right;
-        }
-        .content p, .content li { margin-bottom: 12px; line-height: 1.6; }
         
-        /* עיצוב בלוק הקוד כדי שיישאר משמאל לימין */
+        .slide {
+            height: 100vh;
+            height: 100svh;
+            width: 100%;
+            scroll-snap-align: start; /* נקודת העצירה של הגלילה */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 5vw;
+            box-sizing: border-box;
+            position: relative;
+        }
+        
+        .slide-content {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        h1, h2 { 
+            color: var(--accent-color); 
+            text-shadow: 0 0 10px rgba(86, 156, 214, 0.2); 
+            margin-bottom: 2vh;
+        }
+        
+        h1 { 
+            font-size: clamp(2.5rem, 5vw, 4.5rem); 
+            text-align: center;
+        }
+        
+        h2 { 
+            font-size: clamp(2rem, 4vw, 3.2rem); 
+            border-bottom: 2px solid var(--accent-color); 
+            padding-bottom: 10px;
+            width: 100%;
+            text-align: right;
+        }
+        
+        .subtitle {
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            color: var(--accent-secondary);
+            margin: 0;
+            text-align: center;
+        }
+        
+        .content {
+            width: 100%;
+            font-size: clamp(1.2rem, 2vw, 1.8rem);
+            text-align: right;
+            line-height: 1.6;
+        }
+        
+        .content p, .content li { margin-bottom: 1vh; }
+        
+        /* עיצוב בלוק הקוד משמאל לימין מותאם רספונסיבית */
         pre {
             background: #1e1e1e !important;
             border: 1px solid #444;
             border-radius: 8px;
-            padding: 20px !important;
-            font-size: 1.3rem !important;
+            padding: 1.5rem !important;
+            font-size: clamp(1rem, 1.5vw, 1.4rem) !important;
             text-align: left;
-            direction: ltr; /* חובה כדי שהקוד לא יתהפך */
+            direction: ltr;
             box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            margin-top: 20px;
+            margin-top: 2vh;
+            width: 100%;
+            box-sizing: border-box;
+            overflow-x: auto;
         }
         
         .exercise-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; direction: ltr; margin-top: 30px;
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 20px; 
+            direction: ltr; 
+            margin-top: 3vh;
+            width: 100%;
         }
+        
         .exercise-item {
-            background: #252526; border: 1px solid #444; padding: 25px;
-            border-radius: 8px; text-align: center; font-size: 2.2rem; font-family: monospace;
-            color: #ce9178; font-weight: bold;
+            background: #252526; 
+            border: 1px solid #444; 
+            padding: 2vh;
+            border-radius: 8px; 
+            text-align: center; 
+            font-size: clamp(1.5rem, 2.5vw, 2.2rem); 
+            font-family: monospace;
+            color: #ce9178; 
+            font-weight: bold;
         }
-        .nav-controls {
-            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
-            z-index: 10; display: flex; gap: 20px; direction: ltr;
-        }
-        button {
-            background: #007acc; color: white; border: none; padding: 12px 25px;
-            font-size: 1.2rem; border-radius: 5px; cursor: pointer; transition: 0.2s;
-        }
-        button:hover { background: #005999; }
+        
         .highlight { color: #dcdcaa; font-weight: bold; }
+        
+        /* התאמות ספציפיות למסכים קטנים מאוד */
+        @media (max-width: 768px) {
+            h2 { text-align: center; }
+            .content { text-align: right; }
+            pre { padding: 1rem !important; }
+        }
     </style>
 </head>
 <body>
-
 <div class="slides-container" id="slides">
     <!-- Slide 1 -->
-    <div class="slide active">
-        <h1>ברוכים השבים! 👋</h1>
-        <p style="font-size: 2rem; color: #4ec9b0;">מדעי המחשב - כיתה י"א</p>
-        <p style="font-size: 1.5rem;">חזרה ממוקדת על יסודות C#</p>
+    <div class="slide">
+        <div class="slide-content" style="align-items: center;">
+            <h1>ברוכים השבים! 👋</h1>
+            <p class="subtitle">מדעי המחשב - כיתה י"א</p>
+            <p style="font-size: clamp(1.2rem, 2vw, 1.8rem); margin-top: 2vh; text-align: center;">חזרה ממוקדת על יסודות C#</p>
+        </div>
     </div>
-
+    
     <!-- Slide 2 -->
     <div class="slide">
-        <h2>הגרלת מספרים (Random)</h2>
-        <div class="content">
-            <p>כדי להגריל מספרים, אנחנו מבצעים תמיד שני שלבים:</p>
-            <ol>
-                <li>יצירת עצם (אובייקט) מסוג <code>Random</code> (נעשה <strong>פעם אחת</strong> בתוכנית).</li>
-                <li>שימוש בפעולה <code>Next</code> כדי להגריל מספר בטווח מסוים בכל פעם שנצטרך.</li>
-            </ol>
+        <div class="slide-content">
+            <h2>הגרלת מספרים (Random)</h2>
+            <div class="content">
+                <p>כדי להגריל מספרים, אנחנו מבצעים תמיד שני שלבים:</p>
+                <ol>
+                    <li>יצירת עצם (אובייקט) מסוג <code>Random</code> (נעשה <strong>פעם אחת</strong> בתוכנית).</li>
+                    <li>שימוש בפעולה <code>Next</code> כדי להגריל מספר בטווח מסוים בכל פעם שנצטרך.</li>
+                </ol>
 <pre><code class="language-csharp">
 // 1. הגדרת האובייקט (נעשה פעם אחת)
 Random rnd = new Random();
-
 // 2. הגרלת מספר שלם (למשל: בין 1 ל-10 כולל)
 // המספר השני הוא הגבול העליון ולא כולל אותו
 int num = rnd.Next(1, 11);
-
 Console.WriteLine("The random number is: " + num);
 </code></pre>
+            </div>
         </div>
     </div>
 
     <!-- Slide 3 -->
     <div class="slide">
-        <h2>פעולת המודולו (%) - שארית</h2>
-        <div class="content">
-            <p>פעולת המודולו לא מחזירה את תוצאת החילוק, אלא את <strong>השארית</strong>.</p>
-            <p>שני השימושים הקריטיים שלנו למודולו:</p>
-            <ul>
-                <li><span class="highlight">מודולו 2 (% 2): לבדיקת זוגיות.</span><br>
-                    אם <code>num % 2 == 0</code> אז המספר זוגי. אחרת, הוא אי-זוגי.
-                </li>
-                <li><span class="highlight">מודולו 10 (% 10): למציאת ספרת האחדות.</span><br>
-                    למשל, <code>138 % 10</code> מחזיר <code>8</code>. זו הדרך שלנו "לפרק" את המספר.
-                </li>
-            </ul>
+        <div class="slide-content">
+            <h2>פעולת המודולו (%) - שארית</h2>
+            <div class="content">
+                <p>פעולת המודולו לא מחזירה את תוצאת החילוק, אלא את <strong>השארית</strong>.</p>
+                <p>שני השימושים הקריטיים שלנו למודולו:</p>
+                <ul>
+                    <li><span class="highlight">מודולו 2 (% 2): לבדיקת זוגיות.</span><br>
+                        אם <code>num % 2 == 0</code> אז המספר זוגי. אחרת, הוא אי-זוגי.
+                    </li>
+                    <li><span class="highlight">מודולו 10 (% 10): למציאת ספרת האחדות.</span><br>
+                        למשל, <code>138 % 10</code> מחזיר <code>8</code>. זו הדרך שלנו "לפרק" את המספר.
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 
     <!-- Slide 4 -->
     <div class="slide">
-        <h2>תרגול כיתתי - מודולו בעל פה</h2>
-        <div class="content">
-            <div class="exercise-grid">
-                <div class="exercise-item">17 % 5 = ?</div>
-                <div class="exercise-item">24 % 2 = ?</div>
-                <div class="exercise-item">138 % 10 = ?</div>
-                <div class="exercise-item">8 % 10 = ?</div>
-                <div class="exercise-item">10 % 3 = ?</div>
-                <div class="exercise-item">100 % 10 = ?</div>
+        <div class="slide-content">
+            <h2>תרגול כיתתי - מודולו בעל פה</h2>
+            <div class="content">
+                <div class="exercise-grid">
+                    <div class="exercise-item">17 % 5 = ?</div>
+                    <div class="exercise-item">24 % 2 = ?</div>
+                    <div class="exercise-item">138 % 10 = ?</div>
+                    <div class="exercise-item">8 % 10 = ?</div>
+                    <div class="exercise-item">10 % 3 = ?</div>
+                    <div class="exercise-item">100 % 10 = ?</div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Slide 5 -->
     <div class="slide">
-        <h2>מבנה לולאת while (עם תנאי קלט)</h2>
-        <div class="content">
-            <p>שימו לב לסדר הפעולות: קליטה ראשונה <strong>לפני</strong> הלולאה, ואת הקליטה הבאה נמקם בדיוק <strong>בסוף הלולאה</strong>, כדי לקדם אותה.</p>
+        <div class="slide-content">
+            <h2>מבנה לולאת while (עם תנאי קלט)</h2>
+            <div class="content">
+                <p>שימו לב לסדר הפעולות: קליטה ראשונה <strong>לפני</strong> הלולאה, ואת הקליטה הבאה נמקם בדיוק <strong>בסוף הלולאה</strong>, כדי לקדם אותה.</p>
 <pre><code class="language-csharp">
 Console.WriteLine("Enter a number (-1 to stop):");
 int num = int.Parse(Console.ReadLine()); // קליטה ראשונה
-
 while (num != -1) // בדיקת תנאי הלולאה
 {
     // --- לוגיקה וחישובים ---
@@ -154,14 +233,16 @@ while (num != -1) // בדיקת תנאי הלולאה
     num = int.Parse(Console.ReadLine());
 }
 </code></pre>
+            </div>
         </div>
     </div>
 
     <!-- Slide 6 -->
     <div class="slide">
-        <h2>פעולות (פונקציות) - מחזירות ערך</h2>
-        <div class="content">
-            <p>בכותרת מצוין הטיפוס שחוזר (למשל <code>int</code>). הפעולה <strong>חייבת</strong> להסתיים ב-<code>return</code>. בעת הזימון ב-Main, <strong>חובה לשמור את הערך</strong> או להשתמש בו (למשל להדפיס).</p>
+        <div class="slide-content">
+            <h2>פעולות (פונקציות) - מחזירות ערך</h2>
+            <div class="content">
+                <p>בכותרת מצוין הטיפוס שחוזר (למשל <code>int</code>). הפעולה <strong>חייבת</strong> להסתיים ב-<code>return</code>. בעת הזימון ב-Main, <strong>חובה לשמור את הערך</strong> או להשתמש בו (למשל להדפיס).</p>
 <pre><code class="language-csharp">
 // הגדרת הפעולה (למשל: סכום)
 public static int Sum(int num1, int num2) 
@@ -169,7 +250,6 @@ public static int Sum(int num1, int num2)
     int result = num1 + num2;
     return result; // החזרת הערך
 }
-
 public static void Main(string[] args) 
 {
     // הזימון: "תופסים" את הערך המוחזר לתוך משתנה
@@ -177,21 +257,22 @@ public static void Main(string[] args)
     Console.WriteLine(total);
 }
 </code></pre>
+            </div>
         </div>
     </div>
 
     <!-- Slide 7 -->
     <div class="slide">
-        <h2>פעולות - לא מחזירות ערך (void)</h2>
-        <div class="content">
-            <p>בכותרת כתוב <code>void</code> (ריק). הפעולה מבצעת משימה אבל לא מחזירה כלום למי שקרא לה. ב-Main, מזמנים אותה כפקודה עצמאית לחלוטין.</p>
+        <div class="slide-content">
+            <h2>פעולות - לא מחזירות ערך (void)</h2>
+            <div class="content">
+                <p>בכותרת כתוב <code>void</code> (ריק). הפעולה מבצעת משימה אבל לא מחזירה כלום למי שקרא לה. ב-Main, מזמנים אותה כפקודה עצמאית לחלוטין.</p>
 <pre><code class="language-csharp">
 // הגדרת הפעולה
 public static void PrintGreeting(string name) 
 {
     Console.WriteLine("Hello " + name + "!");
 }
-
 public static void Main(string[] args) 
 {
     // זימון הפעולה כמשפט עצמאי
@@ -199,50 +280,30 @@ public static void Main(string[] args)
     PrintGreeting("Gitit");
 }
 </code></pre>
+            </div>
         </div>
     </div>
-</div>
-
-<!-- כפתורי ניווט -->
-<div class="nav-controls">
-    <button onclick="prevSlide()">הקודם</button>
-    <button onclick="nextSlide()">הבא</button>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
 <script>
-    let currentSlide = 0;
-    const slides = document.querySelectorAll('.slide');
-
-    function showSlide(index) {
-        slides.forEach(slide => slide.classList.remove('active'));
-        slides[index].classList.add('active');
-    }
-
-    function nextSlide() {
-        if (currentSlide < slides.length - 1) {
-            currentSlide++;
-            showSlide(currentSlide);
-        }
-    }
-
-    function prevSlide() {
-        if (currentSlide > 0) {
-            currentSlide--;
-            showSlide(currentSlide);
-        }
-    }
-
-    // ניווט באמצעות חצים במקלדת (הפוך בגלל שכיוון הטקסט מימין לשמאל)
+    // תמיכה בניווט עם מקשי החצים והרווח (מותאם לכיווניות RTL)
+    const container = document.getElementById('slides');
+    
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-            nextSlide();
-        } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-            prevSlide();
+        const slideHeight = window.innerHeight;
+        // חץ שמאלה, למטה או רווח - עובר לשקופית הבאה
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowDown' || e.key === ' ') {
+            e.preventDefault();
+            container.scrollBy({ top: slideHeight, behavior: 'smooth' });
+        } 
+        // חץ ימינה או למעלה - חוזר לשקופית הקודמת
+        else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            container.scrollBy({ top: -slideHeight, behavior: 'smooth' });
         }
     });
 </script>
 </body>
 </html>
-
