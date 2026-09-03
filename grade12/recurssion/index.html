@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>רקורסיה - מדעי המחשב י"ב (מבואות עירון)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f0f4f8;
+            --slide-bg: #ffffff;
+            --text: #1e293b;
+            --accent: #2563eb;
+            --accent-light: #eff6ff;
+            --code-bg: #1e1e1e;
+            --code-text: #d4d4d4;
+        }
+
+        body {
+            font-family: 'Heebo', sans-serif;
+            background: var(--bg);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: var(--text);
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 1050px;
+            height: 680px;
+            background: var(--slide-bg);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            right: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .brand {
+            font-weight: 800;
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            padding: 80px 60px 80px 60px;
+            box-sizing: border-box;
+            flex-direction: column;
+            animation: fadeIn 0.4s ease-out;
+            overflow-y: auto;
+        }
+
+        .slide.active { display: flex; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: var(--accent);
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        h2 {
+            color: var(--accent);
+            font-size: 2.5rem;
+            margin-top: 0;
+            margin-bottom: 25px;
+            border-bottom: 3px solid var(--accent-light);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.8rem;
+            color: #64748b;
+            font-weight: 300;
+        }
+
+        p, li {
+            font-size: 1.4rem;
+            line-height: 1.6;
+        }
+
+        .box {
+            background: var(--accent-light);
+            border-right: 5px solid var(--accent);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .pseudocode {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 1.5rem;
+            direction: rtl;
+            text-align: right;
+            box-shadow: inset 0 4px 6px rgba(0,0,0,0.1);
+            line-height: 1.8;
+            font-weight: bold;
+            font-family: monospace;
+        }
+
+        .keyword { color: #569cd6; }
+        .comment { color: #6a9955; font-style: italic; font-weight: normal; }
+
+        .babushka-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            font-size: 12rem;
+            gap: 20px;
+        }
+        
+        .b1 { font-size: 14rem; }
+        .b2 { font-size: 10rem; }
+        .b3 { font-size: 7rem; }
+        .b4 { font-size: 4rem; }
+
+        /* עיצוב המעקב הרקורסיבי */
+        .trace-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .trace-box {
+            border: 3px solid var(--accent);
+            background: #fff;
+            padding: 15px 30px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.4rem;
+            min-width: 350px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .trace-box.base-case {
+            border-color: #10b981;
+            background: #ecfdf5;
+        }
+
+        .trace-arrows {
+            display: flex;
+            justify-content: space-around;
+            width: 350px;
+            margin: 10px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .arrow-down {
+            color: #ef4444;
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+        
+        .arrow-up {
+            color: #10b981;
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .trace-status {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-top: 5px;
+        }
+
+        .trace-result {
+            color: #10b981;
+            font-weight: bold;
+            font-size: 1.3rem;
+            margin-top: 5px;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 25px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            z-index: 20;
+        }
+
+        button.nav-btn {
+            background: var(--text);
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Heebo', sans-serif;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        button.nav-btn:hover { background: #334155; }
+        button.nav-btn:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+        .progress {
+            position: absolute;
+            bottom: 35px;
+            right: 40px;
+            font-size: 1.2rem;
+            color: #64748b;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="presentation-container">
+    <div class="header">
+        <div class="brand">מגמת מדעי המחשב י"ב | גיתית בר-אל כהן</div>
+    </div>
+
+    <!-- שקף 1: פתיחה -->
+    <div class="slide active">
+        <div style="margin-top: 150px;">
+            <h1>מבוא לרקורסיה</h1>
+            <div class="subtitle">הסבר פשוט וברור (ללא עצמים)</div>
+            <div style="text-align: center; font-size: 5rem; margin-top: 30px;">🔄</div>
+        </div>
+    </div>
+
+    <!-- שקף 2: ספירת תלמידים רגילה -->
+    <div class="slide">
+        <h2>ספירת תלמידים בטור (לולאה רגילה)</h2>
+        <div class="box">
+            שיטה 1: מתנדב עובר אחד-אחד, סופר את כולם מתחילת הטור ועד סופו.
+        </div>
+        <p>פתרון איטרטיבי (רגיל) עם לולאה:</p>
+        <div class="pseudocode">
+            <span class="keyword">פעולה</span> ספירת_תלמידים()<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;מונה = 0<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">כל עוד</span> (יש עוד תלמיד בטור)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;מונה = מונה + 1<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;עבור לתלמיד הבא<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">החזר</span> מונה
+        </div>
+    </div>
+
+    <!-- שקף 3: ספירת תלמידים רקורסיבית -->
+    <div class="slide">
+        <h2>ספירת תלמידים בטור (רקורסיה)</h2>
+        <div class="box" style="border-color: #10b981; background: #ecfdf5;">
+            שיטה 2: כל תלמיד שואל את זה שמאחוריו "כמה יש מאחוריך?", מחכה לתשובה, מוסיף את עצמו (1), ומוסר אחורה.
+        </div>
+        <p>ברקורסיה אנחנו מחלקים את הבעיה ל: <b>אני (1) + התשובה של שאר הטור</b>.</p>
+        <div class="pseudocode">
+            <span class="keyword">פעולה</span> ספירת_תלמידים_רקורסיה(תלמיד_נוכחי)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// תנאי עצירה - מישהו שאין אף אחד מאחוריו</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">אם</span> (אין תלמיד מאחוריי)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">החזר</span> 1<br>
+            <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// זימון רקורסיבי - קריאה מוקטנת</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">החזר</span> 1 + ספירת_תלמידים_רקורסיה(התלמיד שמאחוריי)
+        </div>
+    </div>
+
+    <!-- שקף 4: בבושקה תמונה -->
+    <div class="slide">
+        <h2 style="border-bottom: none; text-align: center; font-size: 3rem;">הדגמה: בבושקות!</h2>
+        <div class="babushka-display">
+            <span class="b1">🪆</span>
+            <span class="b2">🪆</span>
+            <span class="b3">🪆</span>
+            <span class="b4">🪆</span>
+        </div>
+    </div>
+
+    <!-- שקף 5: קוד בבושקה -->
+    <div class="slide">
+        <h2>פסאודו-קוד: ספירת בבושקות</h2>
+        <p>כמה בבושקות מסתתרות אחת בתוך השנייה?</p>
+        <div class="pseudocode">
+            <span class="keyword">פעולה</span> ספירת_בבושקות(בבושקה)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// 1. תנאי עצירה (הבבושקה הכי קטנה, ריקה)</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">אם</span> (הבבושקה ריקה מבפנים)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">החזר</span> 1<br>
+            <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// 2. קריאה רקורסיבית (גרסה מוקטנת של הבעיה)</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">החזר</span> 1 + ספירת_בבושקות(הבבושקה שבתוכי)
+        </div>
+    </div>
+
+    <!-- שקף 6: מעקב רקורסיבי (קופסאות וחצים) -->
+    <div class="slide">
+        <h2 style="margin-bottom: 5px;">מעקב רקורסיבי (איך החצים עולים ויורדים)</h2>
+        <div class="trace-wrapper">
+            
+            <div class="trace-box">
+                <b>ספירת_בבושקות(🪆 גדולה)</b>
+                <div class="trace-status">ממתין לתשובה מהבבושקה הפנימית...</div>
+                <div class="trace-result">מחזיר בסוף: 1 + 2 = <span style="font-size:1.6rem; color:#2563eb">3 סה"כ!</span></div>
+            </div>
+            
+            <div class="trace-arrows">
+                <div class="arrow-down">⬇️<br>קורא ל...</div>
+                <div class="arrow-up">⬆️<br>מחזיר 2</div>
+            </div>
+            
+            <div class="trace-box">
+                <b>ספירת_בבושקות(🪆 בינונית)</b>
+                <div class="trace-status">ממתין לתשובה מהבבושקה הפנימית...</div>
+                <div class="trace-result">מחזיר: 1 + 1 = 2</div>
+            </div>
+
+            <div class="trace-arrows">
+                <div class="arrow-down">⬇️<br>קורא ל...</div>
+                <div class="arrow-up">⬆️<br>מחזיר 1</div>
+            </div>
+
+            <div class="trace-box base-case">
+                <b>ספירת_בבושקות(🪆 קטנה)</b>
+                <div class="trace-status" style="color:#059669; font-weight:bold;">תנאי עצירה! (היא ריקה)</div>
+                <div class="trace-result">מחזיר 1 מייד</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- שקף 7: סיכום -->
+    <div class="slide">
+        <h2>סיכום: אז מהי רקורסיה?</h2>
+        <div class="box">
+            רקורסיה היא שיטה שבה פעולה קוראת לעצמה, כדי לפתור <b>גרסה מוקטנת</b> של אותה הבעיה.
+        </div>
+        <p>כל פעולה רקורסיבית בנויה מ-2 חלקים הכרחיים:</p>
+        <ol style="margin-top: 10px;">
+            <li style="margin-bottom: 15px;">
+                <b>תנאי עצירה (Base Case):</b> המצב הפשוט ביותר שבו הבעיה נפתרת באופן מיידי (כמו התלמיד האחרון או הבבושקה הקטנה ביותר). ללא תנאי עצירה נקבל קריסות של לולאה אינסופית.
+            </li>
+            <li>
+                <b>קריאה רקורסיבית (Recursive Call):</b> הפעולה מזמנת את עצמה שוב, אבל על בעיה <b>קטנה יותר</b> שמקרבת אותנו לתנאי העצירה.
+            </li>
+        </ol>
+    </div>
+
+    <div class="progress"><span id="currSlide">1</span> / 7</div>
+    
+    <div class="controls">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">הקודם</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">הבא</button>
+    </div>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const currLabel = document.getElementById('currSlide');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    
+    function showSlide(index) {
+        slides.forEach(s => s.classList.remove('active'));
+        slides[index].classList.add('active');
+        
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = index === slides.length - 1;
+        currLabel.innerText = index + 1;
+    }
+    
+    function changeSlide(dir) {
+        currentSlide += dir;
+        if(currentSlide < 0) currentSlide = 0;
+        if(currentSlide >= slides.length) currentSlide = slides.length - 1;
+        showSlide(currentSlide);
+    }
+    
+    document.addEventListener('keydown', (e) => {
+        if(e.key === 'ArrowLeft') changeSlide(1);
+        else if(e.key === 'ArrowRight') changeSlide(-1);
+    });
+    
+    showSlide(0);
+</script>
+
+</body>
+</html>
