@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>איש תלוי - י"ב</title>
+    <!-- טעינת ספריות לעיצוב ול-React -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const EXPRESSIONS = [
+            "שלומית בונה סוכה", "תפוח בדבש", "תפילת נעילה", "מסע לפולין",
+            "גפילטע פיש", "צום גדליה", "תקיעת שופר", "ארבעת המינים",
+            "סעודה מפסקת", "חשבון נפש", `מיונים לצה"ל`, "מכינה קדם צבאית",
+            "אושפיזין בסוכה", "שנת שירות", "חול המועד", "מכתב המלצה",
+            "עשרת ימי תשובה", "יום סיירות", "הושענא רבה", "טסט ראשון"
+        ];
+
+        const LETTERS = "אבגדהוזחטיכךלמםנןסעפףצץקרשת".split("");
+
+        const HangmanGame = () => {
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [guessedLetters, setGuessedLetters] = useState([]);
+            const [mistakes, setMistakes] = useState(0);
+            const [revealed, setRevealed] = useState(false);
+            
+            // מצבים חדשים לניהול הקבוצות והניקוד
+            const [teamScores, setTeamScores] = useState([0, 0]);
+            const [guessCount, setGuessCount] = useState(0);
+            const [turnEnded, setTurnEnded] = useState(false);
+            const [gameEnded, setGameEnded] = useState(false);
+
+            const currentWord = EXPRESSIONS[currentIndex];
+            const currentTeam = currentIndex % 2; // 0 לקבוצה 1, 1 לקבוצה 2
+            
+            // 5 שלבים: 1. ראש, 2. פרצוף, 3. גוף, 4. שתי ידיים, 5. שתי רגליים (פסילה)
+            const MAX_MISTAKES = 5; 
+
+            const isLetter = (char) => LETTERS.includes(char);
+
+            // פונקציה שמסיימת את התור ומחשבת נקודות
+            const endTurn = (teamIndex, currentGuesses, isPenalty) => {
+                const points = currentGuesses + (isPenalty ? 2 : 0);
+                setTeamScores(prev => {
+                    const newScores = [...prev];
+                    newScores[teamIndex] += points;
+                    return newScores;
+                });
+                setTurnEnded(true);
+                setRevealed(true); // תמיד נחשוף את הביטוי בסיום התור
+            };
+
+            const handleGuess = (letter) => {
+                if (guessedLetters.includes(letter) || turnEnded) return;
+
+                const isWrongGuess = !currentWord.includes(letter);
+                const nextMistakes = mistakes + (isWrongGuess ? 1 : 0);
+                const nextGuessCount = guessCount + 1;
+                const nextGuessedLetters = [...guessedLetters, letter];
+
+                setGuessedLetters(nextGuessedLetters);
+                setGuessCount(nextGuessCount);
+                if (isWrongGuess) setMistakes(nextMistakes);
+                
+                const hasWon = currentWord.split('').every(char => 
+                    !isLetter(char) || nextGuessedLetters.includes(char)
+                );
+                const hasLost = nextMistakes >= MAX_MISTAKES;
+
+                if (hasWon) {
+                    endTurn(currentTeam, nextGuessCount, false);
+                } else if (hasLost) {
+                    endTurn(currentTeam, nextGuessCount, true);
+                }
+            };
+
+            const handleReveal = () => {
+                if (turnEnded) return;
+                endTurn(currentTeam, guessCount, false);
+            };
+
+            const nextExpression = () => {
+                if (currentIndex < EXPRESSIONS.length - 1) {
+                    setCurrentIndex(prev => prev + 1);
+                    resetGame();
+                } else {
+                    setGameEnded(true);
+                }
+            };
+
+            const resetGame = () => {
+                setGuessedLetters([]);
+                setMistakes(0);
+                setRevealed(false);
+                setGuessCount(0);
+                setTurnEnded(false);
+            };
+
+            // מסך סיום המשחק
+            if (gameEnded) {
+                const winner = teamScores[0] < teamScores[1] ? "קבוצה 1" : teamScores[1] < teamScores[0] ? "קבוצה 2" : "תיקו!";
+                return (
+                    <div className="bg-white rounded-2xl shadow-xl p-8 max-w-3xl w-full flex flex-col items-center border-t-8 border-indigo-500 text-center">
+                        <h1 className="text-5xl font-black mb-6 text-indigo-700">המשחק הסתיים!</h1>
+                        <h2 className="text-3xl font-bold mb-8">המנצחת: <span className="text-green-600">{winner}</span></h2>
+                        <div className="flex gap-12 mb-8">
+                            <div className="text-2xl">קבוצה 1: <strong className="text-3xl">{teamScores[0]}</strong> נק'</div>
+                            <div className="text-2xl">קבוצה 2: <strong className="text-3xl">{teamScores[1]}</strong> נק'</div>
+                        </div>
+                        <p className="text-gray-500 font-medium mb-10 text-lg">כל הכבוד! הקבוצה בעלת הניקוד הנמוך ביותר היא המנצחת.</p>
+                        <button onClick={() => window.location.reload()} className="bg-indigo-600 hover:bg-indigo-700 text-white text-xl font-bold py-3 px-10 rounded-lg shadow-md transition-all transform hover:scale-105">
+                            התחל משחק חדש
+                        </button>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="bg-white rounded-2xl shadow-xl p-8 max-w-3xl w-full flex flex-col items-center border-t-8 border-indigo-500 relative">
+                    
+                    {/* תצוגת ניקוד קבוצות */}
+                    <div className="flex justify-between w-full mb-6 gap-4">
+                        <div className={`p-4 rounded-xl text-center flex-1 transition-all ${currentTeam === 0 ? 'bg-indigo-100 border-2 border-indigo-500 shadow-md transform scale-105' : 'bg-gray-50 border-2 border-transparent opacity-75'}`}>
+                            <h2 className={`text-xl font-bold ${currentTeam === 0 ? 'text-indigo-800' : 'text-gray-500'}`}>קבוצה 1</h2>
+                            <p className="text-2xl font-black text-gray-800">{teamScores[0]} נק'</p>
+                        </div>
+                        <div className={`p-4 rounded-xl text-center flex-1 transition-all ${currentTeam === 1 ? 'bg-purple-100 border-2 border-purple-500 shadow-md transform scale-105' : 'bg-gray-50 border-2 border-transparent opacity-75'}`}>
+                            <h2 className={`text-xl font-bold ${currentTeam === 1 ? 'text-purple-800' : 'text-gray-500'}`}>קבוצה 2</h2>
+                            <p className="text-2xl font-black text-gray-800">{teamScores[1]} נק'</p>
+                        </div>
+                    </div>
+
+                    <h1 className="text-3xl font-black mb-2 text-gray-800">איש תלוי</h1>
+                    <div className="text-gray-600 font-semibold mb-6">
+                        ניחושים בתור הנוכחי: <span className="text-xl text-red-500 font-bold">{guessCount}</span>
+                    </div>
+                    
+                    {/* ציור האיש התלוי ב-SVG */}
+                    <div className="mb-8">
+                        <svg width="200" height="250" viewBox="0 0 200 250" className="stroke-gray-800" strokeWidth="5" fill="none" strokeLinecap="round">
+                            {/* עמוד התלייה שתמיד מופיע */}
+                            <line x1="20" y1="240" x2="100" y2="240" />
+                            <line x1="60" y1="240" x2="60" y2="20" />
+                            <line x1="60" y1="20" x2="150" y2="20" />
+                            <line x1="150" y1="20" x2="150" y2="50" />
+
+                            {/* שלב 1: ראש */}
+                            {mistakes >= 1 && <circle cx="150" cy="75" r="25" />}
+                            
+                            {/* שלב 2: פרצוף (עיניים ופה) */}
+                            {mistakes >= 2 && (
+                                <g stroke="#1f2937" fill="#1f2937" strokeWidth="2">
+                                    <circle cx="142" cy="68" r="2.5" />
+                                    <circle cx="158" cy="68" r="2.5" />
+                                    <path d="M 142 82 Q 150 88 158 82" fill="none" strokeWidth="3" />
+                                </g>
+                            )}
+
+                            {/* שלב 3: גוף */}
+                            {mistakes >= 3 && <line x1="150" y1="100" x2="150" y2="170" />}
+                            
+                            {/* שלב 4: שתי ידיים */}
+                            {mistakes >= 4 && (
+                                <g>
+                                    <line x1="150" y1="120" x2="110" y2="160" />
+                                    <line x1="150" y1="120" x2="190" y2="160" />
+                                </g>
+                            )}
+                            
+                            {/* שלב 5: שתי רגליים (פסול) */}
+                            {mistakes >= 5 && (
+                                <g>
+                                    <line x1="150" y1="170" x2="110" y2="220" />
+                                    <line x1="150" y1="170" x2="190" y2="220" />
+                                </g>
+                            )}
+                        </svg>
+                    </div>
+
+                    {/* תצוגת הביטוי */}
+                    <div className="flex flex-wrap justify-center gap-6 mb-8 min-h-[4rem] text-center" dir="rtl">
+                        {currentWord.split(' ').map((word, wIdx) => (
+                            <div key={wIdx} className="flex gap-2">
+                                {word.split('').map((char, cIdx) => {
+                                    if (!isLetter(char)) {
+                                        return <span key={cIdx} className="text-4xl font-bold self-end pb-2">{char}</span>;
+                                    }
+                                    const isRevealedChar = guessedLetters.includes(char) || revealed;
+                                    return (
+                                        <div key={cIdx} className="flex flex-col items-center justify-end w-10 h-14 border-b-4 border-gray-800 text-4xl font-bold text-gray-900">
+                                            {isRevealedChar ? char : ""}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* כפתורי שליטה */}
+                    <div className="flex gap-4 mb-6 min-h-[3rem]">
+                        {!turnEnded ? (
+                            <button onClick={handleReveal} className="bg-yellow-500 hover:bg-yellow-600 text-white text-lg font-bold py-2 px-8 rounded-lg shadow-md transition-all transform hover:scale-105">
+                                חשוף ביטוי (סיום תור)
+                            </button>
+                        ) : (
+                            <button onClick={nextExpression} className="bg-green-500 hover:bg-green-600 text-white text-lg font-bold py-2 px-8 rounded-lg shadow-md transition-all transform hover:scale-105">
+                                {currentIndex < EXPRESSIONS.length - 1 ? "המשך לתור הבא" : "סיים משחק"}
+                            </button>
+                        )}
+                    </div>
+
+                    {/* מקלדת אותיות */}
+                    <div className={`flex flex-wrap justify-center gap-2 max-w-2xl transition-opacity duration-300 ${turnEnded ? 'opacity-50 pointer-events-none' : ''}`} dir="rtl">
+                        {LETTERS.map(letter => {
+                            const isGuessed = guessedLetters.includes(letter);
+                            const isCorrect = isGuessed && currentWord.includes(letter);
+                            const isWrong = isGuessed && !currentWord.includes(letter);
+                            
+                            let btnClass = "w-12 h-12 text-2xl font-bold rounded-lg shadow-sm transition-all focus:outline-none ";
+                            
+                            if (isCorrect) {
+                                btnClass += "bg-green-400 text-white opacity-80 cursor-not-allowed";
+                            } else if (isWrong) {
+                                btnClass += "bg-gray-200 text-gray-400 cursor-not-allowed";
+                            } else {
+                                btnClass += "bg-indigo-100 hover:bg-indigo-200 text-indigo-800 hover:shadow-md transform hover:-translate-y-1";
+                            }
+
+                            return (
+                                <button 
+                                    key={letter} 
+                                    onClick={() => handleGuess(letter)}
+                                    disabled={isGuessed || turnEnded}
+                                    className={btnClass}
+                                >
+                                    {letter}
+                                </button>
+                            );
+                        })}
+                    </div>
+                    
+                    <div className="mt-8 text-gray-500 font-semibold bg-gray-100 px-4 py-2 rounded-full">
+                        ביטוי {currentIndex + 1} מתוך {EXPRESSIONS.length}
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<HangmanGame />);
+    </script>
+</body>
+</html>
