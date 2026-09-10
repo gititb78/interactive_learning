@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>מצגת עצמים - מחלקת תלמיד</title>
+    <style>
+        :root {
+            --bg-color: #1e1e1e;
+            --text-color: #f5f5f5;
+            --accent-color: #ffcc00;
+            --code-bg: #2d2d2d;
+            --note-bg: #fff3cd;
+            --note-text: #856404;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .slide {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 40px 80px;
+            box-sizing: border-box;
+            border-bottom: 2px solid #333;
+            page-break-after: always;
+        }
+
+        h1 {
+            color: var(--accent-color);
+            font-size: 3.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: var(--accent-color);
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        p, li {
+            font-size: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .content-split {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+        }
+
+        .code-block {
+            background-color: var(--code-bg);
+            padding: 20px;
+            border-radius: 10px;
+            flex: 2;
+            direction: ltr;
+            text-align: left;
+            font-family: 'Consolas', monospace;
+            font-size: 1.3rem;
+            color: #9cdcfe;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            overflow-x: auto;
+        }
+
+        .code-keyword { color: #569cd6; }
+        .code-type { color: #4ec9b0; }
+        .code-string { color: #ce9178; }
+
+        .notes {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .yellow-note {
+            background-color: var(--note-bg);
+            color: var(--note-text);
+            padding: 20px;
+            border-radius: 8px;
+            border-right: 6px solid #ffeeba;
+            font-weight: bold;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .yellow-note::before {
+            content: "💡";
+            margin-left: 10px;
+        }
+
+        .center-text {
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            font-size: 1.5rem;
+        }
+
+        /* הגדרות להדפסה נכונה של ה-PDF */
+        @media print {
+            body {
+                background-color: white;
+                color: black;
+            }
+            .code-block {
+                background-color: #f4f4f4;
+                color: black;
+                border: 1px solid #ccc;
+            }
+            .yellow-note {
+                border: 1px solid #ffeeba;
+            }
+            h1, h2 {
+                color: black;
+                border-bottom-color: black;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- שקף 1: פתיחה -->
+    <div class="slide">
+        <h1>תכנות מונחה עצמים (OOP)</h1>
+        <div class="subtitle">הכרות ראשונית עם מחלקות - מחלקת תלמיד (Student)</div>
+        <p class="center-text" style="margin-top: 50px;">
+            <strong>מגמת מדעי המחשב</strong><br>
+            מבואות עירון<br>
+            מורה: גיתית
+        </p>
+    </div>
+
+    <!-- שקף 2: מדוע צריך עצם -->
+    <div class="slide">
+        <h2>למה בכלל צריך "עצם" מסוג תלמיד?</h2>
+        <p>עד כה, כדי לשמור נתונים על תלמיד אחד היינו צריכים להגדיר המון משתנים נפרדים:</p>
+        <ul>
+            <li>משתנה למחרוזת השם (name)</li>
+            <li>משתנה לגיל (age)</li>
+            <li>משתנים נפרדים לכל ציון (math, english, computers)</li>
+        </ul>
+        <div class="yellow-note" style="margin-top: 30px;">
+            במקום לפזר את המידע, מחלקה מאפשרת לנו לארוז את כל המידע שקשור לאותו אובייקט תחת קורת גג אחת, וליצור תבנית מסודרת שנקראת "עצם" (Object).
+        </div>
+    </div>
+
+    <!-- שקף 3: תכונות -->
+    <div class="slide">
+        <h2>1. הגדרת התכונות (private)</h2>
+        <div class="content-split">
+            <div class="code-block">
+<span class="code-keyword">class</span> <span class="code-type">Student</span>
+{
+    <span class="code-keyword">private</span> <span class="code-keyword">string</span> name;
+    <span class="code-keyword">private</span> <span class="code-keyword">int</span> age;
+    <span class="code-keyword">private</span> <span class="code-keyword">string</span> address;
+    <span class="code-keyword">private</span> <span class="code-keyword">int</span> math;
+    <span class="code-keyword">private</span> <span class="code-keyword">int</span> english;
+    <span class="code-keyword">private</span> <span class="code-keyword">int</span> computers;
+            </div>
+            <div class="notes">
+                <div class="yellow-note">
+                    התכונות (Attributes) מתארות את המצב של העצם.
+                </div>
+                <div class="yellow-note">
+                    אנו משתמשים במילת המפתח private (פרטי). המשמעות היא שלא ניתן לגשת לתכונות האלו ישירות מחוץ למחלקה – זוהי "הכמסת נתונים".
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- שקף 4: פעולה בונה -->
+    <div class="slide">
+        <h2>2. פעולה בונה (Constructor)</h2>
+        <div class="content-split">
+            <div class="code-block">
+<span class="code-keyword">public</span> Student(<span class="code-keyword">string</span> name, <span class="code-keyword">int</span> age, <span class="code-keyword">string</span> address, <span class="code-keyword">int</span> math, <span class="code-keyword">int</span> english, <span class="code-keyword">int</span> computers)
+{
+    <span class="code-keyword">this</span>.name = name;
+    <span class="code-keyword">this</span>.age = age;
+    <span class="code-keyword">this</span>.address = address;
+    <span class="code-keyword">this</span>.math = math;
+    <span class="code-keyword">this</span>.english = english;
+    <span class="code-keyword">this</span>.computers = computers;
+}
+            </div>
+            <div class="notes">
+                <div class="yellow-note">חובה! הפעולה שבונה את העצם בזכרון.</div>
+                <div class="yellow-note">לא מחזירה ערך (אין void ואין טיפוס החזרה), היא מחזירה בעצמה את העצם שנוצר.</div>
+                <div class="yellow-note">שמה זהה בדיוק לשם המחלקה.</div>
+                <div class="yellow-note">המילה this. מבדילה בין התכונה של העצם לבין הפרמטר שהתקבל.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- שקף 5: פעולות Get ו-Set -->
+    <div class="slide">
+        <h2>3. פעולות Get ו-Set</h2>
+        <div class="content-split">
+            <div class="code-block" style="font-size: 1.1rem;">
+<span class="code-keyword">public string</span> GetName()
+{
+    <span class="code-keyword">return this</span>.name;
+}
+
+<span class="code-keyword">public void</span> SetMath(<span class="code-keyword">int</span> math)
+{
+    <span class="code-keyword">this</span>.math = math;
+}
+            </div>
+            <div class="notes">
+                <div class="yellow-note">
+                    מאחר והתכונות מוגדרות כ-private, אנו מספקים פעולות "ציבוריות" (public) כדי לגשת אליהן.
+                </div>
+                <div class="yellow-note">
+                    <strong>Get:</strong> פעולה שמחזירה את הערך של התכונה (שליפה).
+                </div>
+                <div class="yellow-note">
+                    <strong>Set:</strong> פעולה שמקבלת ערך ומעדכנת את התכונה (השמה). פעולה זו תמיד תהיה מסוג void.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- שקף 6: פעולות לוגיות -->
+    <div class="slide">
+        <h2>4. פעולות לוגיות (לפי דרישה)</h2>
+        <div class="content-split">
+            <div class="code-block">
+<span class="code-keyword">public double</span> GetAverage()
+{
+    <span class="code-keyword">return</span> (<span class="code-keyword">this</span>.math + <span class="code-keyword">this</span>.english + <span class="code-keyword">this</span>.computers) / <span class="code-keyword">3.0</span>;
+}
+
+<span class="code-keyword">public void</span> IncAge()
+{
+    <span class="code-keyword">this</span>.age++;
+}
+            </div>
+            <div class="notes">
+                <div class="yellow-note">
+                    אלו פעולות שמבצעות חישובים או פעולות ספציפיות על התכונות של העצם הנוכחי.
+                </div>
+                <div class="yellow-note">
+                    בדוגמה: חישוב ממוצע הציונים של התלמיד, או פעולה פשוטה שמגדילה את גיל התלמיד בשנה.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- שקף 7: פעולת ToString -->
+    <div class="slide">
+        <h2>5. פעולת תיאור - ToString</h2>
+        <div class="content-split">
+            <div class="code-block" style="font-size: 1.1rem;">
+<span class="code-keyword">public override string</span> ToString()
+{
+    <span class="code-keyword">string</span> s = <span class="code-string">"Name:"</span> + <span class="code-keyword">this</span>.name;
+    s += <span class="code-string">" Age:"</span> + <span class="code-keyword">this</span>.age;
+    s += <span class="code-string">"\nMath Grade:"</span> + <span class="code-keyword">this</span>.math + 
+         <span class="code-string">" English Grade:"</span> + <span class="code-keyword">this</span>.english + 
+         <span class="code-string">" Computers Grade:"</span> + <span class="code-keyword">this</span>.computers;
+    <span class="code-keyword">return</span> s;
+}
+            </div>
+            <div class="notes">
+                <div class="yellow-note">
+                    זוהי פעולה מיוחדת המחזירה מחרוזת (string).
+                </div>
+                <div class="yellow-note">
+                    תפקידה לאסוף את הנתונים המרכזיים של העצם ולהחזיר אותם כטקסט קריא.
+                </div>
+                <div class="yellow-note">
+                    המילה override מסמנת שאנחנו "דורסים" את הפעולה המקורית הקיימת בשפה, ונותנים לה משמעות מיוחדת עבור התלמיד שלנו.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
