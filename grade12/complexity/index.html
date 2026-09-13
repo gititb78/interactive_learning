@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>מצגת סיבוכיות וזמן ריצה</title>
+    <style>
+        :root {
+            --bg-color: #1e1e1e;
+            --text-color: #f5f5f5;
+            --accent-color: #00d2ff;
+            --code-bg: #2d2d2d;
+            --note-bg: #e3f2fd;
+            --note-text: #0d47a1;
+            --table-border: #444;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        .slide {
+            display: none;
+            min-height: 100vh;
+            flex-direction: column;
+            justify-content: center;
+            padding: 40px 80px 100px 80px;
+            box-sizing: border-box;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .slide.active { display: flex; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: var(--accent-color);
+            font-size: 3.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: var(--accent-color);
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        p, li {
+            font-size: 1.5rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .content-split {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+        }
+
+        .code-block {
+            background-color: var(--code-bg);
+            padding: 20px;
+            border-radius: 10px;
+            direction: ltr;
+            text-align: left;
+            font-family: 'Consolas', monospace;
+            font-size: 1.4rem;
+            line-height: 1.4;
+            color: #9cdcfe;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            white-space: pre;
+            flex: 1;
+            overflow-x: auto;
+        }
+
+        .code-keyword { color: #569cd6; }
+        .code-type { color: #4ec9b0; }
+        .code-string { color: #ce9178; }
+        .code-comment { color: #6a9955; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        .explanation {
+            flex: 1;
+            background-color: var(--note-bg);
+            color: var(--note-text);
+            padding: 25px;
+            border-radius: 8px;
+            border-right: 6px solid #64b5f6;
+            font-weight: bold;
+            font-size: 1.4rem;
+        }
+
+        /* עיצוב טבלה */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 1.4rem;
+            background-color: #2a2a2a;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        th, td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid var(--table-border);
+        }
+        th {
+            background-color: var(--accent-color);
+            color: #1e1e1e;
+            font-weight: bold;
+        }
+        tr:nth-child(even) { background-color: #333; }
+
+        .center-text { text-align: center; }
+        .subtitle { text-align: center; color: #aaa; font-size: 1.5rem; }
+
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            background-color: rgba(30, 30, 30, 0.9);
+            padding: 10px 20px;
+            border-radius: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .btn {
+            background-color: var(--accent-color);
+            color: #1e1e1e;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .btn:hover { background-color: #0097a7; }
+        .btn:active { transform: scale(0.95); }
+        .btn:disabled { background-color: #555; color: #888; cursor: not-allowed; }
+
+        .slide-counter { font-size: 1.2rem; font-weight: bold; min-width: 60px; text-align: center; }
+
+        .image-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .image-container img {
+            max-height: 400px;
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+        }
+
+        @media print {
+            body { background-color: white; color: black; }
+            .controls { display: none; }
+            .slide { 
+                display: flex !important; 
+                min-height: auto;
+                page-break-after: always; 
+                padding: 20px;
+            }
+            .code-block { background-color: #f4f4f4; color: black; border: 1px solid #ccc; white-space: pre-wrap;}
+            .explanation { border: 1px solid #64b5f6; }
+            table { background-color: white; }
+            tr:nth-child(even) { background-color: #f9f9f9; }
+            th, td { border: 1px solid #000; color: #000; }
+            h1, h2 { color: black; border-bottom-color: black; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <button class="btn" id="nextBtn" onclick="nextSlide()">הבא ⬅️</button>
+        <div class="slide-counter" id="counter">1 / 21</div>
+        <button class="btn" id="prevBtn" onclick="prevSlide()">➡️ הקודם</button>
+    </div>
+
+    <!-- שקף 1: שער -->
+    <div class="slide active">
+        <h1>מבוא לסיבוכיות זמן ריצה</h1>
+        <div class="subtitle">הערכת יעילות של אלגוריתמים</div>
+        <p class="center-text" style="margin-top: 50px;">
+            <strong>מגמת מדעי המחשב</strong><br>
+            מבואות עירון<br>
+            מורה: גיתית
+        </p>
+    </div>
+
+    <!-- שקף 2: סוכן נוסע - תמונה -->
+    <div class="slide">
+        <h2>בעיית הסוכן הנוסע</h2>
+        <p>תארו לעצמכם סוכן שצריך לבקר במספר נקודות בעיר, בדיוק פעם אחת בכל נקודה, ולחזור להתחלה במסלול הקצר ביותר.</p>
+        
+        <div class="image-container">
+            <img src="סוכן נוסע.png" alt="תרשים בעיית הסוכן הנוסע">
+        </div>
+
+        <p>כדי למצוא את המסלול המיטבי, המחשב יצטרך לבדוק את כל האפשרויות הקיימות. ככל שנוסיף נקודות למפה, כמות המסלולים האפשריים הולכת וגדלה בקצב מסחרר.</p>
+    </div>
+
+    <!-- שקף 3: טבלת זמן ריצה סוכן נוסע -->
+    <div class="slide">
+        <h2>התפוצצות קומבינטורית: זמני חישוב</h2>
+        <p>הנה טבלה המראה כמה זמן ייקח למחשב (המבצע מיליארד פעולות בשנייה) לחשב את כל המסלולים בהתאם לכמות האטרקציות:</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>מספר האטרקציות</th>
+                    <th>מספר המסלולים לבדיקה</th>
+                    <th>זמן חישוב משוער</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>5</td>
+                    <td>120</td>
+                    <td>שבריר שנייה</td>
+                </tr>
+                <tr>
+                    <td>10</td>
+                    <td>3,628,800</td>
+                    <td>0.003 שניות</td>
+                </tr>
+                <tr>
+                    <td>15</td>
+                    <td>1,307,674,368,000</td>
+                    <td>כ-21 דקות</td>
+                </tr>
+                <tr>
+                    <td>20</td>
+                    <td>2,432,902,008,176,640,000</td>
+                    <td><strong>כ-77 שנים!</strong></td>
+                </tr>
+            </tbody>
+        </table>
+        <p style="margin-top:20px;"><strong>המסקנה:</strong> לא מספיק לכתוב קוד שעובד. אנו חייבים להעריך <strong>כמה זמן ייקח לו לרוץ</strong>.</p>
+    </div>
+
+    <!-- שקף 4: חישוב עם פקודות -->
+    <div class="slide">
+        <h2>פונקציית זמן ריצה (ספירת פקודות)</h2>
+        <p>אפשר לספור במדויק כמה פעולות המחשב מבצע כתלות בגודל הקלט (n):</p>
+        <div class="content-split">
+            <div class="code-block" style="font-size: 1.2rem;"><span class="code-keyword">public static int</span> Sum(<span class="code-keyword">int</span>[] arr) {
+    <span class="code-keyword">int</span> sum = 0;              <span class="code-comment">/* 1 (השמה) */</span>
+    <span class="code-keyword">int</span> n = arr.Length;       <span class="code-comment">/* 1 (השמה) */</span>
+    
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = 0; i &lt; n; i++) <span class="code-comment">/* 1 + 2n + 1 */</span>
+        sum += arr[i];        <span class="code-comment">/* n (חיבור והשמה) */</span>
+        
+    <span class="code-keyword">return</span> sum;               <span class="code-comment">/* 1 (החזרה) */</span>
+}</div>
+            <div class="explanation">
+                <strong>סך הכל פעולות שיתבצעו:</strong>
+                <div style="direction: ltr; text-align: left; margin: 15px 0; font-size: 1.6rem;">
+                    1 + 1 + (2n + 2) + n + 1 = <strong>3n + 5</strong>
+                </div>
+                ככל שהמערך (n) גדל, הפקודות הבודדות מחוץ ללולאה (ה-+5) הופכות לזניחות, והלולאה עצמה היא זו שקובעת את קצב הגידול של זמן הריצה.
+            </div>
+        </div>
+    </div>
+
+    <!-- שקף 5: מקרה גרוע מול ממוצע -->
+    <div class="slide">
+        <h2>מקרה ממוצע לעומת מקרה גרוע</h2>
+        <p>לפעמים זמן הריצה תלוי לא רק בגודל הקלט (n), אלא גם ב<strong>תוכן</strong> שלו. נתבונן בפעולת חיפוש איבר במערך:</p>
+        <div class="content-split">
+            <div class="code-block"><span class="code-keyword">public static int</span> Search(<span class="code-keyword">int</span>[] arr, <span class="code-keyword">int</span> k) {
+    <span class="code-keyword">int</span> n = arr.Length; 
+    
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = 0; i &lt; n; i++) 
+        <span class="code-keyword">if</span> (arr[i] == k)  
+            <span class="code-keyword">return</span> i; 
+            
+    <span class="code-keyword">return</span> -1;
+}</div>
+            <div class="explanation">
+                <ul>
+                    <li style="margin-bottom: 10px;"><strong>המקרה הטוב:</strong> k נמצא בתא הראשון. הלולאה נעצרת מיד.</li>
+                    <li style="margin-bottom: 10px;"><strong>המקרה הממוצע:</strong> k נמצא אי שם באמצע, נבדוק כ-n/2 תאים.</li>
+                    <li><strong>המקרה הגרוע:</strong> k לא קיים כלל (או נמצא בסוף). ניאלץ לבדוק את <strong>כל n התאים</strong>.</li>
+                </ul>
+                <div style="margin-top:15px; color: #b71c1c;">
+                    💡 במדעי המחשב אנחנו מתעניינים לרוב ב<strong>מקרה הגרוע ביותר</strong>, כדי להבטיח למשתמש שהתוכנית לעולם לא תעבור גבול מסוים.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- שקף 6: הערכת סדר גודל - Big O -->
+    <div class="slide">
+        <h2>הערכת סדר גודל (Big O Notation)</h2>
+        <p>כפי שראינו, פונקציית זמן הריצה המדויקת (למשל <code>3n + 5</code>) היא מפורטת מדי. בפועל, אנו מעוניינים רק ב<strong>סדר הגודל</strong> של הפונקציה כש-n שואף לאינסוף.</p>
+        
+        <div style="background-color: var(--code-bg); padding: 30px; border-radius: 10px; margin-top: 20px;">
+            <p style="color: var(--accent-color); font-size: 2rem; text-align: center; margin: 0; direction: ltr;">
+                O( complexity )
+            </p>
+        </div>
+        
+        <ul style="margin-top: 30px;">
+            <li>האות <strong>O</strong> (נקראת Big O) מציינת "בסדר גודל של...".</li>
+            <li>אנו <strong>מתעלמים מקבועים וממקדמים</strong>.</li>
+            <li>אם ספרנו <code>3n + 5</code> פעולות, נתעלם מה-5 ומהכופל 3, ונגיד שהסיבוכיות היא פשוט <strong>(n)O</strong>.</li>
+            <li>אם הפונקציה הייתה <code>5n² + 2n + 10</code>, החזקה הגבוהה ביותר קובעת, ולכן הסיבוכיות תהיה <strong>(O(n²</strong>.</li>
+        </ul>
+    </div>
+
+    <!-- שקף 7: קבועה -->
+    <div class="slide">
+        <h2>דוגמאות: זמן קבוע - O(1)</h2>
+        <div class="content-split">
+            <div class="code-block" style="font-size: 1.2rem;"><span class="code-comment">// דוגמה 1: הדפסה פשוטה של הודעה</span>
+<span class="code-keyword">public static void</span> PrintMessage() {
+    Console.WriteLine(<span class="code-string">"Hello World!"</span>); 
+}
+
+<span class="code-comment">// דוגמה 2: סכום איבר ראשון ואחרון</span>
+<span class="code-keyword">public static int</span> SumFirstLast(<span class="code-keyword">int</span>[] arr) {
+    <span class="code-keyword">return</span> arr[0] + arr[arr.Length - 1]; 
+}</div>
+            <div class="explanation">
+                <strong>(1)O - זמן קבוע</strong><br><br>
+                הפעולות אינן תלויות כלל בגודל של אוסף נתונים כלשהו ואין בהן לולאות.<br><br>
+                בדוגמה השנייה, למרות שאנו מקבלים מערך, הגישה לתאים מתבצעת ישירות דרך האינדקס שלהם. חיבור שני תאים ייקח בדיוק את אותו הזמן – בין אם המערך מכיל 5 איברים ובין אם מיליון איברים.
+            </div>
+        </div>
+    </div>
+
+    <!-- שקף 8: לינארית -->
+    <div class="slide">
+        <h2>דוגמאות: זמן לינארי - O(n)</h2>
+        <div class="content-split">
+            <div class="code-block" style="font-size: 1.1rem;"><span class="code-comment">// דוגמה 1: סכום איברי מערך (לולאה אחת)</span>
+<span class="code-keyword">public static int</span> SumArray(<span class="code-keyword">int</span>[] arr) {
+    <span class="code-keyword">int</span> sum = 0;
+    <span class="code-keyword">for</span>(<span class="code-keyword">int</span> i = 0; i &lt; arr.Length; i++) 
+        sum += arr[i];
+    <span class="code-keyword">return</span> sum;
+}
+
+<span class="code-comment">// דוגמה 2: לולאות עוקבות (מקסימום והדפסתו)</span>
+<span class="code-keyword">public static void</span> PrintAllMax(<span class="code-keyword">int</span>[] arr) {
+    <span class="code-keyword">int</span> max = arr[0];
+    <span class="code-keyword">for</span>(<span class="code-keyword">int</span> i = 1; i &lt; arr.Length; i++) 
+        <span class="code-keyword">if</span>(arr[i] > max) max = arr[i];
+            
+    <span class="code-keyword">for</span>(<span class="code-keyword">int</span> j = 0; j &lt; arr.Length; j++) 
+        <span class="code-keyword">if</span>(arr[j] == max) Console.WriteLine(max);
+}</div>
+            <div class="explanation" style="font-size: 1.25rem;">
+                <strong>(n)O - זמן לינארי</strong><br><br>
+                בדוגמה השנייה יש שתי לולאות, אבל הן מופיעות <strong>אחת אחרי השנייה</strong> ולא אחת בתוך השנייה.<br><br>
+                כמות הפעולות הכוללת היא בערך n ועוד n (כלומר 2n). מכיוון שאנו מעריכים סדר גודל (Big O) ומתעלמים מקבועים כופלים, הסיבוכיות נשארת לינארית: (n)O.
+            </div>
+        </div>
+    </div>
+
+    <!-- שקף 9: ריבועית -->
+    <div class="slide">
+        <h2>דוגמאות: זמן ריבועי - O(n²)</h2>
+        <div class="content-split">
+            <div class="code-block" style="font-size: 0.95rem;"><span class="code-comment">// דוגמה 1: לולאה בתוך לולאה</span>
+<span class="code-keyword">public static void</span> PrintPairs(<span class="code-keyword">int</span>[] arr) {
+    <span class="code-keyword">for</span>(<span class="code-keyword">int</span> i = 0; i &lt; arr.Length; i++) 
+        <span class="code-keyword">for</span>(<span class="code-keyword">int</span> j = 0; j &lt; arr.Length; j++) 
+            Console.WriteLine(arr[i] + <span class="code-string">","</span> + arr[j]);
+}
+
+<span class="code-comment">// פעולת עזר O(n) שעוברת על המערך</span>
+<span class="code-keyword">public static int</span> CountVal(<span class="code-keyword">int</span>[] arr, <span class="code-keyword">int</span> val) {
+    <span class="code-keyword">int</span> count = 0;
+    <span class="code-keyword">for</span>(<span class="code-keyword">int</span> i = 0; i &lt; arr.Length; i++) 
+        <span class="code-keyword">if</span>(arr[i] == val) count++;
+    <span class="code-keyword">return</span> count;
+}
+
+<span class="code-comment">// דוגמה 2: קריאה לפעולת עזר O(n) מתוך לולאה</span>
+<span class="code-keyword">public static void</span> PrintFreq(<span class="code-keyword">int</span>[] arr) {
+    <span class="code-keyword">for</span>(<span class="code-keyword">int</span> i = 0; i &lt; arr.Length; i++) {
+        <span class="code-keyword">int</span> c = CountVal(arr, arr[i]); 
+        Console.WriteLine(c);
+    }
+}</div>
+            <div class="explanation" style="font-size: 1.25rem;">
+                <strong>(O(n² - זמן ריבועי</strong><br><br>
+                זמן ריבועי נגרם כשיש <strong>כפילות מעברים</strong>. <br><br>
+                בדוגמה השנייה, הלולאה המקוננת "מוסתרת" בתוך קריאה לפעולת העזר <code>CountVal</code>.<br>
+                כיוון שפעולת העזר עוברת על כל המערך (n)O, והלולאה החיצונית קוראת לה n פעמים, סך הפעולות הכולל יהיה בקירוב n * n.
+            </div>
+        </div>
+    </div>
+
+    <!-- שקף 10: סדרי גודל סיכום -->
+    <div class="slide">
+        <h2>לסיכום סדרי הגודל</h2>
+        <p>אנו מאפיינים אלגוריתמים לפי קצב הגידול של הזמן שלהם ביחס לקלט:</p>
+        <ul>
+            <li style="margin-bottom: 20px;"><strong>(1)O - קבועה:</strong> היעילה ביותר. זמן הריצה נשאר זהה תמיד (קו אופקי בגרף).</li>
+            <li style="margin-bottom: 20px;"><strong>(n)O - לינארית:</strong> זמן הריצה גדל בקצב אחיד ביחס לקלט. אם הקלט הוכפל, הזמן יוכפל (קו ישר אלכסוני).</li>
+            <li><strong>(O(n² - ריבועית:</strong> זמן הריצה גדל באופן מעריכי. יעיל לקלטים קטנים, אך קורס מהר מאוד כאשר המערך הופך לגדול (פרבולה).</li>
+        </ul>
+    </div>
+
+    <!-- שקף 11: מבנה תשובה -->
+    <div class="slide">
+        <h2>מבנה התשובה הנדרש במבחן</h2>
+        <p>כאשר נשאלים מהי סיבוכיות זמן הריצה, חובה לענות לפי 3 שלבים ברורים במדויק:</p>
+        <ol style="background-color: var(--code-bg); padding: 30px 60px; border-radius: 10px; font-size: 1.8rem;">
+            <li style="margin-bottom: 20px;"><strong>הגדרת n:</strong> הניסוח הנדרש הוא: "n - גודל המערך" (ללא תוספות מיותרות).</li>
+            <li style="margin-bottom: 20px;"><strong>הסיבוכיות:</strong> ציון סדר הגודל - למשל: "סיבוכיות זמן הריצה היא (n)O".</li>
+            <li><strong>נימוק:</strong> למשל: "משום שישנה לולאה בודדת העוברת על כל איברי המערך, וכל הפעולות בתוכה מתבצעות ב-(1)O".</li>
+        </ol>
+    </div>
+
+    <!-- שקף 12: חידון 1 שאלה (O(n^2)) -->
+    <div class="slide">
+        <h2>חידון - שאלה 1</h2>
+        <p>מהי סיבוכיות זמן הריצה של הפעולה הבאה?</p>
+        <div class="code-block"><span class="code-keyword">public static void</span> FindDuplicates(<span class="code-keyword">int</span>[] arr) {
+    <span class="code-keyword">int</span> n = arr.Length;
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = 0; i &lt; n; i++) {
+        <span class="code-keyword">for</span> (<span class="code-keyword">int</span> j = i + 1; j &lt; n; j++) {
+            <span class="code-keyword">if</span> (arr[i] == arr[j])
+                Console.WriteLine("Duplicate: " + arr[i]);
+        }
+    }
+}</div>
+    </div>
+
+    <!-- שקף 13: חידון 1 פתרון -->
+    <div class="slide">
+        <h2>חידון - שאלה 1: פתרון</h2>
+        <div class="content-split">
+            <div class="code-block"><span class="code-keyword">public static void</span> FindDuplicates(<span class="code-keyword">int</span>[] arr) {
+    <span class="code-keyword">int</span> n = arr.Length;
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = 0; i &lt; n; i++) {
+        <span class="code-keyword">for</span> (<span class="code-keyword">int</span> j = i + 1; j &lt; n; j++) {
+            <span class="code-keyword">if</span> (arr[i] == arr[j])
+                Console.WriteLine("Duplicate: " + arr[i]);
+        }
+    }
+}</div>
+            <div class="explanation">
+                <strong>תשובה: (O(n²</strong><br><br>
+                1. n - גודל המערך.<br>
+                2. הסיבוכיות היא (O(n². <br>
+                3. נימוק: קיימת לולאה מקוננת. למרות שהלולאה הפנימית מתחילה מ-i+1 ולא מ-0, כמות הפעולות הכללית היא בקירוב (n²)/2. מכיוון שמתעלמים ממקדמים במסגרת הערכת סדר גודל, הסיבוכיות נשארת ריבועית.
+            </div>
+        </div>
+    </div>
+
+    <!-- שקף 14: חידון 2 שאלה (O(1)) -->
+    <div class="slide">
+        <h2>חידון - שאלה 2</h2>
+        <p>מהי סיבוכיות זמן הריצה של הפעולה הבאה?</p>
+        <div class="code-block"><span class="code-keyword">public static void</span> PrintFirstAndLast(<span class="code-keyword">int</span>[] arr) {
+    <span class="code-keyword">if</span> (arr.Length >= 2) {
+        Console.WriteLine(arr[0]);
+        Console.WriteLine(arr[arr.Length - 1]);
+    }
+}</div>
+    </div>
+
+    <!-- שקף 15: חידון 2 פתרון -->
+    <div class="slide">
+        <h2>חידון - שאלה 2: פתרון</h2>
+        <div class="content-split">
+            <div class="code-block"><span class="code-keyword">public static void</span> PrintFirstAndLast(<span class="code-keyword">int</span>[] arr) {
+    <span class="code-keyword">if</span> (arr.Length >= 2) {
+        Console.WriteLine(arr[0]);
+        Console.WriteLine(arr[arr.Length - 1]);
+    }
+}</div>
+            <div class="explanation">
+                <strong>תשובה: (1)O</strong><br><br>
+                1. n - גודל המערך.<br>
+                2. הסיבוכיות היא (1)O. <br>
+                3. נימוק: אין לולאות כלל. הפעולה ניגשת ישירות לשני תאים במערך לפי אינדקס קבוע, ולכן זמן הריצה קבוע ואינו מושפע מגודל המערך (n).
+            </div>
+        </div>
+    </div>
+
+    <!-- שקף 16: חידון 3 שאלה (O(n)) -->
+    <div class="slide">
+        <h2>חידון - שאלה 3</h2>
+        <p>מהי סיבוכיות זמן הריצה של הפעולה הבאה?</p>
+        <div class="code-block"><span class="code-keyword">public static int</span> MaxInArray(<span class="code-keyword">int</span>[] arr) {
+    <span class="code-keyword">int</span> max = arr[0];
+    <span class="code-keyword">int</span> n = arr.Length; 
+    
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = 1; i &lt; n; i++) {
+        <span class="code-keyword">if</span> (arr[i] > max)
+            max = arr[i];
+    }
+        
+    <span class="code-keyword">return</span> max;
+}</div>
+    </div>
+
+    <!-- שקף 17: חידון 3 פתרון -->
+    <div class="slide">
+        <h2>חידון - שאלה 3: פתרון</h2>
+        <div class="content-split">
+            <div class="code-block"><span class="code-keyword">public static int</span> MaxInArray(<span class="code-keyword">int</span>[] arr) {
+    <span class="code-keyword">int</span> max = arr[0];
+    <span class="code-keyword">int</span> n = arr.Length; 
+    
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = 1; i &lt; n; i++) {
+        <span class="code-keyword">if</span> (arr[i] > max)
+            max = arr[i];
+    }
+        
+    <span class="code-keyword">return</span> max;
+}</div>
+            <div class="explanation">
+                <strong>תשובה: (n)O</strong><br><br>
+                1. n - גודל המערך.<br>
+                2. הסיבוכיות היא (n)O. <br>
+                3. נימוק: הפונקציה מכילה לולאה אחת ויחידה שעוברת על תאי המערך מאינדקס 1 ועד סופו (המקרה הגרוע). הפעולות בתוך הלולאה (בדיקת תנאי והשמה) הן פעולות בסיסיות של (1)O.
+            </div>
+        </div>
+    </div>
+
+    <!-- שקף 18: חידון 4 שאלה (O(n^2)) -->
+    <div class="slide">
+        <h2>חידון - שאלה 4</h2>
+        <p>מהי סיבוכיות זמן הריצה של הפעולה הבאה?</p>
+        <div class="code-block"><span class="code-keyword">public static void</span> SharedNums(<span class="code-keyword">int</span>[] arr1, <span class="code-keyword">int</span>[] arr2) {
+    <span class="code-keyword">int</span> counter; 
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = 0; i &lt; arr1.Length; i++) { 
+        counter = 0; 
+        <span class="code-keyword">for</span> (<span class="code-keyword">int</span> j = 0; j &lt; arr2.Length; j++) {
+            <span class="code-keyword">if</span> (arr1[i] == arr2[j]) 
+                counter++; 
+        }
+        <span class="code-keyword">if</span> (counter > 0) 
+            Console.WriteLine (arr1[i] + "..."); 
+    }
+}</div>
+    </div>
+
+    <!-- שקף 19: חידון 4 פתרון -->
+    <div class="slide">
+        <h2>חידון - שאלה 4: פתרון</h2>
+        <div class="content-split">
+            <div class="code-block"><span class="code-keyword">public static void</span> SharedNums(<span class="code-keyword">int</span>[] arr1, <span class="code-keyword">int</span>[] arr2) {
+    <span class="code-keyword">int</span> counter; 
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = 0; i &lt; arr1.Length; i++) { 
+        counter = 0; 
+        <span class="code-keyword">for</span> (<span class="code-keyword">int</span> j = 0; j &lt; arr2.Length; j++) {
+            <span class="code-keyword">if</span> (arr1[i] == arr2[j]) 
+                counter++; 
+        }
+        <span class="code-keyword">if</span> (counter > 0) 
+            Console.WriteLine (arr1[i] + "..."); 
+    }
+}</div>
+            <div class="explanation">
+                <strong>תשובה: (O(n²</strong><br><br>
+                1. n - גודל המערכים. <br>
+                2. הסיבוכיות היא (O(n². <br>
+                3. נימוק: קיימת לולאה מקוננת. לכל אחד מ-n האיברים שעוברת עליהם הלולאה החיצונית, הלולאה הפנימית רצה במלואה n פעמים. לכן סך הפעולות יהיה n * n.
+            </div>
+        </div>
+    </div>
+
+    <!-- שקף 20: חידון 5 שאלה (O(n)) -->
+    <div class="slide">
+        <h2>חידון - שאלה 5</h2>
+        <p>מהי סיבוכיות זמן הריצה של הפעולה הבאה?</p>
+        <div class="code-block"><span class="code-keyword">public static int</span> CountEvens(<span class="code-keyword">int</span>[] arr) {
+    <span class="code-keyword">int</span> count = 0;
+    <span class="code-keyword">int</span> n = arr.Length; 
+    
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = 0; i &lt; n; i++) {
+        <span class="code-keyword">if</span> (arr[i] % 2 == 0)
+            count++;
+    }
+        
+    <span class="code-keyword">return</span> count;
+}</div>
+    </div>
+
+    <!-- שקף 21: חידון 5 פתרון -->
+    <div class="slide">
+        <h2>חידון - שאלה 5: פתרון</h2>
+        <div class="content-split">
+            <div class="code-block"><span class="code-keyword">public static int</span> CountEvens(<span class="code-keyword">int</span>[] arr) {
+    <span class="code-keyword">int</span> count = 0;
+    <span class="code-keyword">int</span> n = arr.Length; 
+    
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = 0; i &lt; n; i++) {
+        <span class="code-keyword">if</span> (arr[i] % 2 == 0)
+            count++;
+    }
+        
+    <span class="code-keyword">return</span> count;
+}</div>
+            <div class="explanation">
+                <strong>תשובה: (n)O</strong><br><br>
+                1. n - גודל המערך.<br>
+                2. הסיבוכיות היא (n)O. <br>
+                3. נימוק: הלולאה עוברת על המערך מתחילתו ועד סופו בדיוק פעם אחת. פעולת המודולו, בדיקת התנאי והוספת האחד למונה לוקחות כולן זמן קבוע של (1)O.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const counter = document.getElementById('counter');
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+
+        function updateSlider() {
+            slides.forEach((slide, index) => {
+                if (index === currentSlideIndex) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+            counter.innerText = `${currentSlideIndex + 1} / ${slides.length}`;
+            prevBtn.disabled = currentSlideIndex === 0;
+            nextBtn.disabled = currentSlideIndex === slides.length - 1;
+        }
+
+        function nextSlide() {
+            if (currentSlideIndex < slides.length - 1) {
+                currentSlideIndex++;
+                updateSlider();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlideIndex > 0) {
+                currentSlideIndex--;
+                updateSlider();
+            }
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowLeft') {
+                nextSlide();
+            } else if (event.key === 'ArrowRight') {
+                prevSlide();
+            }
+        });
+
+        updateSlider();
+    </script>
+</body>
+</html>
